@@ -243,6 +243,7 @@ export const am: Translations = {
     loginToJoin: "ለመቀላቀል ይግቡ",
     payAndJoin: "የመግቢያ ክፍያ ከፍለው ይቀላቀሉ",
     setBidAndPayChapa: "ዋጋ ይሙሉ እና በቻፓ (Chapa) ይክፈሉ",
+    placeOneAndPayChapa: "1 ትኬት ይግዙ · {amount}",
     placePackAndPayChapa: "{count} ትኬት ይግዙ · {amount}",
     freeLabel: "ነፃ",
     freeEntranceBanner:
@@ -378,6 +379,9 @@ export const am: Translations = {
     mobileLowestUniqueTag: "ልዩ ዝቅተኛው ያሸንፋል",
   },
   dashboard: {
+    statJoined: "የተቀላቀሉት",
+    statLive: "አሁን በቀጥታ",
+    statWon: "ያሸነፉት",
     title: "የእኔ ጨረታዎች",
     subtitle: "የተቀላቀሏቸው ጨረታዎች እና የመጫረቻ እንቅስቃሴዎ።",
     loadError: "ጨረታዎችዎን መጫን አልተቻለም።",

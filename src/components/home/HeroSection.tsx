@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Trophy, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Trophy,
+  Users,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  Target,
+  Eye,
+} from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
@@ -115,49 +123,49 @@ export function HeroSection({
   };
 
   return (
-    <section className="relative overflow-hidden bg-white pt-[4.75rem] sm:bg-[#2D9FF6] sm:pt-[5.25rem]">
+    <section className="cm-brand-panel relative overflow-hidden pt-[4.5rem] sm:pt-[5.25rem]">
       <Image
         src="/hero_banner.jpg"
         alt=""
         fill
         priority
         sizes="100vw"
-        className="pointer-events-none hidden object-cover object-center sm:block"
+        className="pointer-events-none hidden object-cover object-center opacity-90 sm:block"
         aria-hidden
       />
 
-      <div className="relative z-20 mx-auto flex w-full max-w-6xl flex-col items-stretch gap-8 px-4 py-10 sm:px-6 lg:min-h-[calc(100svh-5.25rem)] lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:py-12">
+      <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-stretch gap-6 px-4 pb-8 pt-6 sm:px-6 sm:py-10 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:py-14">
         {/* Copy */}
         <motion.div
-          className="relative z-30 flex w-full flex-col items-start justify-center text-left lg:w-1/2 lg:max-w-xl lg:shrink-0"
+          className="relative z-30 flex w-full flex-col items-start justify-center text-left lg:w-1/2 lg:max-w-2xl lg:shrink-0"
           variants={copyContainer}
           initial="hidden"
           animate="show"
         >
           <motion.h1
             variants={fadeUp}
-            className="text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl sm:text-white lg:text-[3.5rem]"
+            className="text-[2.35rem] font-extrabold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(8,47,73,0.25)] sm:text-5xl lg:text-[3.5rem]"
           >
             <span className="block">{dict.home.heroTitlePrefix}</span>
-            <span className="mt-1 block text-[#2D9FF6] sm:text-[#FFF307]">
+            <span className="mt-1 block text-[#FFF307]">
               {dict.home.heroTitleHighlight}
             </span>
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
-            className="mt-5 max-w-md text-base font-bold leading-relaxed text-slate-600 sm:text-lg sm:text-white"
+            className="mt-4 max-w-md text-base font-semibold leading-relaxed text-white/90 sm:text-lg"
           >
             {dict.home.heroSubtitle}
           </motion.p>
 
           <motion.div
             variants={fadeUp}
-            className="mt-8 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+            className="mt-6 grid w-full grid-cols-2 gap-2.5 sm:flex sm:w-auto sm:flex-row sm:items-center sm:gap-3"
           >
             <Link
               href="/auctions"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2D9FF6] px-6 text-sm font-extrabold text-white shadow-[0_10px_25px_rgba(13,60,110,0.18)] transition hover:-translate-y-0.5 hover:bg-[#1c8ee0] active:translate-y-0 sm:h-14 sm:bg-white sm:px-7 sm:text-base sm:text-[#2D9FF6] sm:hover:bg-white/95"
+              className="btn-shine inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-4 text-sm font-extrabold text-[var(--color-primary-700)] shadow-[0_12px_28px_-8px_rgba(8,47,73,0.45)] transition duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] sm:h-14 sm:px-7 sm:text-base"
             >
               <Trophy className="h-5 w-5 shrink-0" />
               <span>{dict.home.browseAuctions}</span>
@@ -165,12 +173,28 @@ export function HeroSection({
 
             <Link
               href="/#how-it-works"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-6 text-sm font-extrabold text-slate-800 transition hover:-translate-y-0.5 hover:bg-slate-100 active:translate-y-0 sm:h-14 sm:border-white/85 sm:bg-white/15 sm:px-7 sm:text-base sm:text-white sm:backdrop-blur-xs sm:hover:bg-white/25"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/60 bg-white/10 px-4 text-sm font-extrabold text-white backdrop-blur-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white/20 active:translate-y-0 active:scale-[0.98] sm:h-14 sm:px-7 sm:text-base"
             >
               <Users className="h-5 w-5 shrink-0" />
               <span>{dict.home.howItWorksBtn}</span>
             </Link>
           </motion.div>
+
+          <motion.ul
+            variants={fadeUp}
+            className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-white/90 sm:text-sm"
+          >
+            {[
+              { icon: Target, label: dict.home.features.lowestUniqueWins },
+              { icon: ShieldCheck, label: dict.home.features.securePayments },
+              { icon: Eye, label: dict.home.features.transparentResults },
+            ].map(({ icon: Icon, label }) => (
+              <li key={label} className="inline-flex items-center gap-1.5">
+                <Icon className="h-4 w-4 text-[#FFF307]" aria-hidden />
+                {label}
+              </li>
+            ))}
+          </motion.ul>
         </motion.div>
 
         {/* Products + card — one centered column */}
@@ -184,7 +208,7 @@ export function HeroSection({
             ease: easeOut,
           }}
         >
-          <div className="flex w-full max-w-[400px] flex-col items-center sm:max-w-[440px]">
+          <div className="flex w-full max-w-[320px] flex-col items-center sm:max-w-[440px]">
             <Image
               src="/hero-products.png"
               alt="Featured auction prizes"
@@ -204,7 +228,7 @@ export function HeroSection({
             </div>
 
             <div
-              className="relative z-30 -mt-2 w-full rounded-2xl bg-white px-3.5 py-3 shadow-[0_12px_28px_rgba(15,23,42,0.14)]"
+              className="relative z-30 -mt-2 w-full rounded-2xl bg-white/95 px-3.5 py-3 shadow-[0_18px_40px_-12px_rgba(8,47,73,0.45)] ring-1 ring-white/70 backdrop-blur"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
               onFocusCapture={() => setPaused(true)}

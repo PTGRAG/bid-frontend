@@ -159,9 +159,9 @@ export function AuctionCard({ auction }: { auction: PublicAuctionCard }) {
   return (
     <Link
       href={`/auctions/${auction.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-3.5 sm:p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md"
+      className="cm-card cm-card-interactive group relative flex h-full flex-col overflow-hidden rounded-2xl"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 flex items-center justify-center">
+      <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 sm:aspect-[4/3]">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -171,191 +171,120 @@ export function AuctionCard({ auction }: { auction: PublicAuctionCard }) {
             decoding="async"
             width={640}
             height={480}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center text-slate-400">
-            <Gavel className="h-10 w-10 mb-1.5 text-slate-300" aria-hidden />
-            <span className="text-sm font-medium text-slate-400">
-              [Product photo]
-            </span>
-          </div>
-        )}
-
-        {tagLabel && isOpen && (
-          <div className="absolute left-3 top-3 sm:left-3.5 sm:top-3.5 z-10 rounded-full bg-[var(--brand-blue)] px-3 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-sm">
-            {tagLabel}
-          </div>
-        )}
-
-        {!isOpen && !tagLabel && (
-          <div className="absolute left-3 top-3 sm:left-3.5 sm:top-3.5 z-10 flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-xs px-3 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-sm">
-            <span>{getStatusLabel(String(auction.status))}</span>
-          </div>
-        )}
-
-        {showCountdown && (
-          <div
-            aria-label={countdownAria}
-            className={[
-              "absolute right-3 top-3 sm:right-3.5 sm:top-3.5 z-10 flex max-w-[72%] items-center gap-1.5 rounded-full px-3 py-1 text-xs sm:text-sm font-bold shadow-sm",
-              urgency === "critical"
-                ? "bg-red-600 text-white animate-pulse"
-                : urgency === "soon"
-                  ? "bg-amber-400 text-slate-900"
-                  : "bg-[var(--brand-yellow)] text-black",
-            ].join(" ")}
-          >
-            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" aria-hidden />
-            {urgency === "critical" || urgency === "soon" ? (
-              <span className="truncate">
-                {urgency === "critical"
-                  ? dict.auctions.endingVerySoon
-                  : dict.auctions.endingSoon}
-                <span className="ml-1 tabular-nums opacity-90">
-                  {timeLeft.mobile}
-                </span>
-              </span>
-            ) : (
-              <>
-                <span className="hidden sm:inline tabular-nums">
-                  {timeLeft.desktop}
-                </span>
-                <span className="sm:hidden tabular-nums">{timeLeft.mobile}</span>
-              </>
-            )}
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={toggleFavorite}
-          aria-label={wishlistAria}
-          aria-pressed={isFavorite}
-          className="absolute bottom-3 right-3 sm:bottom-3.5 sm:right-3.5 z-10 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white/95 shadow-sm border border-slate-100/90 text-slate-400 hover:text-rose-500 hover:scale-110 active:scale-95 transition-all"
-        >
-          <Heart
-            aria-hidden
-            className={`h-4 w-4 sm:h-4.5 sm:w-4.5 transition-colors ${
-              isFavorite
-                ? "fill-rose-500 text-rose-500"
-                : "text-slate-400 group-hover:text-slate-600"
+            className={`h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06] ${
+              isEnded ? "saturate-[0.6]" : ""
             }`}
           />
-        </button>
-      </div>
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center text-slate-300">
+            <Gavel className="h-9 w-9" aria-hidden />
+          </div>
+        )}
 
-      <div className="flex flex-1 flex-col pt-3.5 sm:pt-4">
-        <div className="flex items-start justify-between gap-2.5">
-          <h3 className="line-clamp-2 min-w-0 flex-1 text-base sm:text-xl font-extrabold text-slate-900 group-hover:text-[var(--brand-blue)] transition-colors leading-snug">
-            {auction.title}
-          </h3>
-          <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs sm:text-sm font-extrabold text-slate-900 tabular-nums">
+        <div className="absolute inset-x-2 top-2 z-10 flex items-start justify-between gap-1.5 sm:inset-x-3 sm:top-3">
+          {tagLabel && isOpen ? (
+            <span className="min-w-0 truncate whitespace-nowrap rounded-full bg-[var(--brand-blue)] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-sm sm:px-2.5 sm:text-xs">
+              {tagLabel}
+            </span>
+          ) : !isOpen ? (
+            <span className="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white backdrop-blur-sm sm:px-2.5 sm:text-xs">
+              {getStatusLabel(String(auction.status))}
+            </span>
+          ) : (
+            <span />
+          )}
+
+          {showCountdown && (
+            <span
+              aria-label={countdownAria}
+              className={[
+                "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-extrabold tabular-nums shadow-sm sm:px-2.5 sm:text-xs",
+                urgency === "critical"
+                  ? "bg-red-600 text-white animate-pulse"
+                  : urgency === "soon"
+                    ? "bg-amber-400 text-slate-900"
+                    : "bg-[var(--brand-yellow)] text-black",
+              ].join(" ")}
+            >
+              <Clock className="h-3 w-3 shrink-0" aria-hidden />
+              <span className="hidden truncate sm:inline">{timeLeft.desktop}</span>
+              <span className="truncate sm:hidden">{timeLeft.mobile}</span>
+            </span>
+          )}
+        </div>
+
+        <div className="absolute inset-x-2 bottom-2 z-10 flex items-end justify-between gap-2 sm:inset-x-3 sm:bottom-3">
+          <span className="rounded-lg bg-white/95 px-2 py-1 text-[11px] font-extrabold leading-none text-slate-900 shadow-[0_2px_8px_rgba(15,23,42,0.15)] ring-1 ring-slate-900/5 backdrop-blur-sm tabular-nums sm:text-sm">
             {t("auctions.entryPill", {
               amount: formatCurrency(auction.entranceFee),
             })}
           </span>
+          <button
+            type="button"
+            onClick={toggleFavorite}
+            aria-label={wishlistAria}
+            aria-pressed={isFavorite}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-slate-500 shadow-sm transition-transform duration-300 [transition-timing-function:var(--ease-spring)] hover:scale-110 hover:text-rose-500 active:scale-90 sm:h-8 sm:w-8"
+          >
+            <Heart
+              aria-hidden
+              className={`h-3.5 w-3.5 transition-colors sm:h-4 sm:w-4 ${
+                isFavorite ? "fill-rose-500 text-rose-500" : ""
+              }`}
+            />
+          </button>
         </div>
+      </div>
+
+      <div className="flex flex-1 flex-col p-2.5 sm:p-4">
+        <h3 className="line-clamp-2 text-sm font-extrabold leading-snug text-slate-900 transition-colors group-hover:text-[var(--color-primary-700)] sm:text-lg">
+          {auction.title}
+        </h3>
 
         {retailValue > 0 && (
-          <p className="mt-1.5 text-sm sm:text-base font-bold text-slate-600">
+          <p className="mt-0.5 text-xs font-bold text-slate-500 sm:text-sm">
             {t("auctions.worth", { amount: formatCurrency(retailValue) })}
           </p>
         )}
 
         {descriptionPreview ? (
-          <p className="mt-2.5 line-clamp-2 text-sm font-medium leading-snug text-slate-600 sm:text-base">
+          <p className="mt-1.5 hidden line-clamp-2 text-sm leading-snug text-slate-600 sm:block">
             {descriptionPreview}
           </p>
         ) : null}
 
-        {/* Players joined / progress bar temporarily hidden
-        <div className="mt-2.5 flex items-center gap-2 text-sm sm:text-base font-bold text-slate-700">
-          <Users className="h-4 w-4 sm:h-5 sm:w-5 text-slate-400 shrink-0" aria-hidden />
-          <span>
-            {t("auctions.playersJoined", { count: participantCount })}
-          </span>
-        </div>
-        */}
-
-        {/* Progress bar temporarily hidden
-        <div className="mt-3">
-          <div className="mb-1.5 flex items-center justify-between gap-2 text-xs sm:text-sm font-extrabold">
-            {prizeUnlocked ? (
-              <span className="text-emerald-700">
-                {dict.auctions.prizeUnlocked}
-              </span>
-            ) : (
-              <span className="text-slate-600">
-                {t("auctions.entrantsProgress", {
-                  count: participantCount,
-                  min: minParticipants,
-                })}
-              </span>
-            )}
-            <span
-              className={
-                prizeUnlocked
-                  ? "text-emerald-700 tabular-nums"
-                  : "text-slate-600 tabular-nums"
-              }
-            >
-              {progress.percent}%
-            </span>
-          </div>
-          <div
-            className="h-3 sm:h-3.5 w-full overflow-hidden rounded-full bg-slate-100 ring-1 ring-inset ring-slate-200/80"
-            role="progressbar"
-            aria-valuenow={progress.percent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={
-              prizeUnlocked
-                ? dict.auctions.prizeUnlocked
-                : t("auctions.entrantsProgress", {
-                    count: participantCount,
-                    min: minParticipants,
-                  })
-            }
-          >
-            <div
-              className={[
-                "h-full rounded-full transition-all duration-500",
-                prizeUnlocked ? "bg-emerald-500" : "bg-[var(--brand-blue)]",
-              ].join(" ")}
-              style={{ width: `${progress.ratio * 100}%` }}
-            />
-          </div>
-        </div>
-        */}
-
-        <div className="mt-auto pt-3.5 sm:pt-4">
+        <div className="mt-auto pt-2.5 sm:pt-3">
           {!isOpen && auction.winnerName ? (
-            <div className="mb-2.5 rounded-xl border border-emerald-200/80 bg-emerald-50/80 px-3 py-2 text-sm">
-              <div className="flex items-center justify-between gap-1.5">
-                <span className="font-bold text-emerald-800 text-xs sm:text-sm">
-                  {dict.winners.winner}
-                </span>
-                <span className="truncate font-extrabold text-emerald-950 text-xs sm:text-sm">
-                  {auction.winnerName}
-                </span>
-              </div>
+            <div className="mb-2 flex items-center justify-between gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs ring-1 ring-inset ring-emerald-200/80 sm:text-sm">
+              <span className="font-bold text-emerald-800">
+                {dict.winners.winner}
+              </span>
+              <span className="truncate font-extrabold text-emerald-950">
+                {auction.winnerName}
+              </span>
             </div>
           ) : null}
 
           {isEnded ? (
             <span
               aria-disabled="true"
-              className="mt-0.5 inline-flex h-11 sm:h-12 w-full cursor-not-allowed items-center justify-center rounded-xl sm:rounded-2xl border border-slate-200 bg-slate-100 px-4 text-sm sm:text-base font-extrabold text-slate-500"
+              className="inline-flex h-9 w-full items-center justify-center rounded-xl bg-slate-100 px-3 text-xs font-extrabold text-slate-500 sm:h-10 sm:text-sm"
             >
               {dict.auctions.ended}
             </span>
           ) : (
-            <span className="mt-0.5 inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl sm:rounded-2xl bg-[var(--brand-blue)] hover:bg-[#1c8ee0] active:scale-[0.99] px-4 text-sm sm:text-base font-extrabold text-white shadow-sm transition-all duration-200 group-hover:brightness-105">
-              <Gavel className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" aria-hidden />
-              <span>{ctaLabel}</span>
+            <span
+              className={[
+                "btn-shine inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-extrabold transition-all duration-200 sm:h-10 sm:text-sm",
+                hasJoined
+                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-700)] ring-1 ring-inset ring-[var(--color-primary-200)] group-hover:bg-[var(--brand-blue)] group-hover:text-white group-hover:ring-transparent"
+                  : "bg-[var(--brand-blue)] text-white shadow-[var(--shadow-glow)] group-hover:bg-[var(--color-primary-600)]",
+              ].join(" ")}
+            >
+              <Gavel className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+              <span className="truncate">{ctaLabel}</span>
               <ArrowRight
-                className="hidden sm:inline h-4 w-4 sm:h-5 sm:w-5 ml-0.5 shrink-0"
+                className="hidden h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 sm:inline"
                 aria-hidden
               />
             </span>
@@ -365,3 +294,21 @@ export function AuctionCard({ auction }: { auction: PublicAuctionCard }) {
     </Link>
   );
 }
+
+/** Loading placeholder with the same footprint as AuctionCard. */
+export function AuctionCardSkeleton() {
+  return (
+    <div className="cm-card flex flex-col overflow-hidden rounded-2xl" aria-hidden>
+      <div className="skeleton aspect-square w-full rounded-none sm:aspect-[4/3]" />
+      <div className="space-y-2 p-2.5 sm:p-4">
+        <div className="skeleton h-4 w-4/5" />
+        <div className="skeleton h-3 w-1/2" />
+        <div className="skeleton mt-3 h-9 w-full rounded-xl sm:h-10" />
+      </div>
+    </div>
+  );
+}
+
+/** Shared responsive grid for auction cards: two up on phones, four on wide screens. */
+export const AUCTION_GRID_CLASS =
+  "grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 xl:grid-cols-4";

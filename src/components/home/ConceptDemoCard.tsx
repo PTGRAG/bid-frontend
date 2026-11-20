@@ -66,7 +66,7 @@ export function ConceptDemoCard({
   };
 
   return (
-    <div className="group flex flex-col rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs transition-all duration-300 hover:border-[var(--brand-blue)]/40 hover:shadow-md">
+    <div className="cm-card cm-card-interactive group flex flex-col rounded-2xl p-3.5 sm:p-4">
       {/* Card Header (Title & Tag, No Icon) */}
       <div className="flex items-center justify-between gap-2">
         <h4 className="truncate text-sm sm:text-base font-extrabold text-slate-900 transition-colors group-hover:text-[var(--brand-blue)]">
@@ -78,14 +78,14 @@ export function ConceptDemoCard({
       </div>
 
       {/* Description: responsive spacing */}
-      <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:mt-2.5 sm:min-h-[2.5rem]">
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-600 sm:min-h-[2.5rem]">
         {description}
       </p>
 
       {/* Video Container: 16:9 ratio, cropped margins, subtle border, interactive controls */}
       <div
         onClick={togglePlay}
-        className="relative mt-3.5 cursor-pointer overflow-hidden rounded-xl border border-slate-200/90 bg-slate-950 aspect-video shadow-xs select-none"
+        className="relative mt-3 cursor-pointer overflow-hidden rounded-xl border border-slate-200/90 bg-slate-950 aspect-video shadow-xs select-none"
         title={isPlaying ? "Click to pause" : "Click to play"}
         role="button"
         tabIndex={0}

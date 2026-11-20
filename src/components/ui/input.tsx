@@ -18,7 +18,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? generatedId
 
     const control = (
-      <div className="relative">
+      <div className="relative w-full min-w-0 flex-1">
         {leftIcon && (
           <div className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-muted-foreground">
             {leftIcon}
@@ -28,7 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={type}
           id={inputId}
           className={cn(
-            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background transition-all duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+            "flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-base font-medium text-slate-900 shadow-xs transition-[border-color,box-shadow,background-color] duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:font-normal placeholder:text-slate-400 hover:border-slate-300 focus-visible:border-[var(--brand-blue)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--brand-blue)]/15 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-60 md:text-sm",
             leftIcon && "pl-10",
             rightIcon && "pr-10",
             error && "border-error-600 focus-visible:ring-error-600",
@@ -54,13 +54,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="mb-1 block text-sm font-medium text-foreground"
+            className="mb-1.5 block text-sm font-bold text-slate-800"
           >
             {label}
           </label>
         )}
         {control}
-        {error && <p className="mt-1 text-sm text-error-600">{error}</p>}
+        {error && <p className="mt-1 text-xs font-semibold text-red-600">{error}</p>}
       </div>
     )
   }

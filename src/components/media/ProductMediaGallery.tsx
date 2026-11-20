@@ -59,8 +59,8 @@ export function ProductMediaGallery({
   return (
     <div className={`space-y-3 ${className}`}>
       <div
-        className={`relative overflow-hidden bg-slate-100 ${
-          isRetail ? "aspect-square rounded-xl" : "aspect-[4/3] rounded-2xl"
+        className={`group relative overflow-hidden bg-gradient-to-br from-white to-slate-100 shadow-[var(--shadow-card)] ring-1 ring-slate-900/5 ${
+          isRetail ? "aspect-square rounded-2xl" : "aspect-[4/3] rounded-3xl"
         }`}
       >
         {selected.type === "video" ? (
@@ -74,21 +74,21 @@ export function ProductMediaGallery({
           <img
             src={selected.url}
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
         )}
       </div>
       {items.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {items.map((item, i) => (
             <button
               key={`${item.url}-${i}`}
               type="button"
               onClick={() => setSelectedIndex(i)}
-              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 ${
+              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl ring-2 ring-offset-2 ring-offset-[var(--background)] transition-all duration-200 ${
                 i === selectedIndex
-                  ? "border-[var(--brand-blue)]"
-                  : "border-transparent"
+                  ? "ring-[var(--brand-blue)]"
+                  : "opacity-70 ring-transparent hover:opacity-100"
               }`}
             >
               {item.type === "video" ? (

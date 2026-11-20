@@ -1,33 +1,33 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold transition-[transform,background-color,box-shadow,color,border-color] duration-200 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background disabled:pointer-events-none disabled:opacity-55 disabled:shadow-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+        default:
+          "btn-shine bg-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-[var(--color-primary-600)]",
         primary:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+          "btn-shine bg-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-[var(--color-primary-600)]",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-slate-200 bg-white text-slate-800 shadow-xs hover:border-[var(--brand-blue)]/50 hover:text-[var(--color-primary-700)]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        premium: "btn-premium text-white",
+          "bg-slate-100 text-slate-900 hover:bg-slate-200/80",
+        ghost: "hover:bg-slate-100 hover:text-slate-900 hover:translate-y-0",
+        link: "text-primary underline-offset-4 hover:underline hover:translate-y-0",
+        premium: "btn-premium btn-shine text-white",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        md: "h-10 px-4 py-2",
-        lg: "h-12 rounded-md px-8 text-lg",
+        default: "h-10 px-4",
+        sm: "h-8 rounded-lg px-3 text-xs",
+        md: "h-10 px-4",
+        lg: "h-12 rounded-2xl px-6 text-base",
         icon: "h-10 w-10",
       },
     },
@@ -71,9 +71,25 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           children
         ) : (
           <>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {!isLoading && children}
-            {isLoading && <span className="sr-only">Loading...</span>}
+            {/* Keep the label in the layout while loading so the button never changes width. */}
+            <span
+              className={cn(
+                "inline-flex items-center justify-center gap-2 transition-opacity",
+                isLoading && "opacity-0"
+              )}
+            >
+              {children}
+            </span>
+            {isLoading && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="cm-dots" aria-hidden>
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                <span className="sr-only">Loading...</span>
+              </span>
+            )}
           </>
         )}
       </Comp>

@@ -133,7 +133,7 @@ function SignupForm() {
     return (
       <AuthSplitShell>
         <div className="flex min-h-[40vh] flex-col items-center justify-center p-6 text-center lg:min-h-[50vh]">
-          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[#24A1DE] border-t-transparent" />
+          <div className="mb-4 cm-spinner" />
           <p className="text-base font-bold text-slate-900">
             Authenticating with Telegram…
           </p>
@@ -361,7 +361,7 @@ export default function SignupPage() {
       fallback={
         <AuthSplitShell>
           <div className="flex min-h-[40vh] items-center justify-center lg:min-h-[50vh]">
-            <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand-blue border-t-transparent" />
+            <div className="cm-spinner" />
           </div>
         </AuthSplitShell>
       }

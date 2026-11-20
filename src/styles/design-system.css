@@ -49,7 +49,10 @@
     --color-neutral-950: #020617;
 
     /* Semantic Mappings */
-    --background: #ffffff;
+    /* Page canvas: a faint cool tint so white cards lift off it without heavy borders */
+    --background: #f4f8fc;
+    --surface: #ffffff;
+    --surface-sunken: #eef3f9;
     --foreground: #0f172a;
     --card: #ffffff;
     --card-foreground: #0f172a;
@@ -85,6 +88,10 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    /* Soft, blue-tinted elevation used by cards and panels */
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px -6px rgba(15, 23, 42, 0.08);
+    --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.04), 0 18px 36px -14px rgba(28, 142, 224, 0.32);
+    --shadow-glow: 0 8px 22px -8px rgba(45, 159, 246, 0.65);
     --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
     /* Transitions */
@@ -92,6 +99,8 @@
     --transition-standard: 200ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-premium: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
     /* Z-Index Hierarchy */
     --z-dropdown: 1000;
@@ -198,4 +207,210 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--color-neutral-400);
+}
+
+/* ------------------------------------------------------------------ */
+/* 2026 refresh: surfaces, motion, loading                              */
+/* ------------------------------------------------------------------ */
+
+/* App canvas: tinted base + soft brand glow + faint dot grid (numbers motif). */
+.cm-canvas {
+    background-color: var(--background);
+    background-image:
+        radial-gradient(60rem 26rem at 85% -8rem, rgba(45, 159, 246, 0.10), transparent 70%),
+        radial-gradient(40rem 20rem at -10% 10rem, rgba(255, 243, 7, 0.08), transparent 70%),
+        radial-gradient(rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+    background-size: auto, auto, 22px 22px;
+    background-repeat: no-repeat, no-repeat, repeat;
+}
+
+/* Brand panel: the blue with depth instead of a flat fill. */
+.cm-brand-panel {
+    background-color: var(--brand-blue);
+    background-image:
+        radial-gradient(36rem 18rem at 100% 0%, rgba(255, 255, 255, 0.22), transparent 65%),
+        radial-gradient(30rem 16rem at 0% 100%, rgba(22, 97, 153, 0.55), transparent 70%),
+        radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+    background-size: auto, auto, 20px 20px;
+}
+
+/* White surface card with hairline ring and soft elevation. */
+.cm-card {
+    background: var(--surface);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-card);
+}
+
+.cm-card-interactive {
+    transition:
+        transform 320ms var(--ease-out-expo),
+        box-shadow 320ms var(--ease-out-expo),
+        border-color 200ms ease;
+}
+
+.cm-card-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(45, 159, 246, 0.35);
+}
+
+/* Small uppercase label used above section titles. */
+.cm-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-primary-700);
+}
+
+.cm-eyebrow::before {
+    content: "";
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 2px;
+    background: var(--brand-yellow);
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.85);
+    transform: rotate(45deg);
+}
+
+/* Shimmering skeleton block for loading states. */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: #e8eef5;
+    border-radius: 0.6rem;
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+    animation: cm-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes cm-shimmer {
+    100% { transform: translateX(100%); }
+}
+
+/* Light sweep across primary buttons on hover. */
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.btn-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transform: translateX(-120%) skewX(-20deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transition: transform 650ms var(--ease-out-expo);
+}
+
+.btn-shine:hover::after {
+    transform: translateX(120%) skewX(-20deg);
+}
+
+/* Three bouncing dots: inline loading indicator for buttons and panels. */
+.cm-dots {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.cm-dots > span {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: cm-dot 1s ease-in-out infinite;
+}
+
+.cm-dots > span:nth-child(2) { animation-delay: 0.15s; }
+.cm-dots > span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes cm-dot {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+    40% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Staggered entrance: set style="--i: n" on children. */
+.cm-rise {
+    animation: cm-rise 560ms var(--ease-out-expo) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes cm-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Countdown digit tick. */
+.cm-tick {
+    animation: cm-tick 380ms var(--ease-spring);
+}
+
+@keyframes cm-tick {
+    from { transform: translateY(-35%); opacity: 0.3; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Live pulse dot. */
+.cm-live-dot {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: #22c55e;
+}
+
+.cm-live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: cm-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes cm-ping {
+    75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cm-rise, .cm-tick, .skeleton::after, .cm-dots > span, .cm-live-dot::after, .btn-shine::after {
+        animation: none !important;
+        transition: none !important;
+    }
+    .cm-card-interactive:hover { transform: none; }
+}
+
+/* Brand spinner: blue arc chasing a yellow arc. */
+.cm-spinner {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    border: 3px solid rgba(45, 159, 246, 0.15);
+    border-top-color: var(--brand-blue);
+    border-right-color: var(--brand-yellow);
+    animation: cm-spin 0.8s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+}
+
+.cm-spinner-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+}
+
+@keyframes cm-spin {
+    to { transform: rotate(360deg); }
 }

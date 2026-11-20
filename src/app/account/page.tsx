@@ -119,27 +119,27 @@ function AccountSettingsContent() {
   if (!user) return null;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pt-28 pb-16 sm:px-6">
+    <div className="mx-auto max-w-2xl px-4 pb-12 pt-20 sm:px-6 sm:pt-24">
       <Link
         href="/"
-        className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-[var(--brand-blue)] transition-colors"
+        className="mb-3 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-[var(--brand-blue)] transition-colors"
       >
         <ArrowLeft className="h-4 w-4" strokeWidth={2.5} />
         {dict.account.backToHome}
       </Link>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-black tracking-tight text-slate-900">
+      <div className="mb-4">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
           {dict.account.title}
         </h1>
-        <p className="mt-2 text-sm font-medium text-slate-500 leading-relaxed">
+        <p className="mt-1 text-sm font-medium text-slate-500 leading-relaxed">
           {dict.account.subtitle}
         </p>
       </div>
 
       {requiredPhone && (
         <div
-          className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-950 shadow-sm"
+          className="mb-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-950 shadow-sm"
           role="status"
         >
           <p className="font-bold flex items-center gap-1.5">
@@ -153,8 +153,8 @@ function AccountSettingsContent() {
       )}
 
       {/* Profile Form Card */}
-      <section className="rounded-3xl border border-slate-100/80 bg-white p-6 shadow-lg shadow-slate-100/40 mb-8">
-        <div className="mb-6 flex items-center gap-2 text-slate-900">
+      <section className="cm-card mb-3 rounded-3xl p-4 sm:p-6">
+        <div className="mb-4 flex items-center gap-2 text-slate-900">
           <User className="h-5 w-5 text-[var(--brand-blue)]" strokeWidth={2.2} />
           <h2 className="text-lg font-extrabold">{dict.account.profileTitle}</h2>
         </div>
@@ -200,7 +200,7 @@ function AccountSettingsContent() {
           <Button
             type="submit"
             disabled={profileSaving}
-            className="w-full sm:w-auto h-11 px-8 text-sm font-bold bg-[var(--brand-blue)] hover:bg-blue-600 text-white rounded-xl shadow-md transition-all active:scale-[0.98]"
+            className="w-full sm:w-auto h-11 px-8 text-sm font-extrabold"
           >
             {profileSaving ? dict.account.saving : dict.account.saveChanges}
           </Button>
@@ -208,7 +208,7 @@ function AccountSettingsContent() {
       </section>
 
       {/* Auction result messages (pay only if you win) */}
-      <section className="rounded-3xl border border-slate-100/80 bg-white p-6 shadow-lg shadow-slate-100/40 mb-8">
+      <section className="cm-card mb-3 rounded-3xl p-4 sm:p-6">
         <div className="mb-3 flex items-center gap-2 text-slate-900">
           <Bell className="h-5 w-5 text-[var(--brand-blue)]" />
           <h2 className="text-lg font-bold">{dict.account.notificationsTitle}</h2>
@@ -235,7 +235,7 @@ function AccountSettingsContent() {
           ).map((pref) => (
             <label
               key={pref.key}
-              className="flex items-start gap-3 rounded-xl border border-slate-200 px-4 py-3"
+              className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 px-4 py-3 transition-colors hover:border-[var(--brand-blue)]/40 has-[:checked]:border-[var(--brand-blue)]/50 has-[:checked]:bg-[var(--color-primary-50)]"
             >
               <input
                 type="checkbox"
@@ -256,8 +256,8 @@ function AccountSettingsContent() {
       </section>
 
       {/* Password Security Card */}
-      <section className="rounded-3xl border border-slate-100/80 bg-white p-6 shadow-lg shadow-slate-100/40 mb-8">
-        <div className="mb-6 flex items-center gap-2 text-slate-900">
+      <section className="cm-card mb-3 rounded-3xl p-4 sm:p-6">
+        <div className="mb-4 flex items-center gap-2 text-slate-900">
           <Lock className="h-5 w-5 text-[var(--brand-blue)]" strokeWidth={2.2} />
           <h2 className="text-lg font-extrabold">{dict.account.securityTitle}</h2>
         </div>

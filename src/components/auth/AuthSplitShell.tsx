@@ -38,8 +38,8 @@ export function AuthSplitShell({ children }: AuthSplitShellProps) {
   const { dict } = useLanguage();
 
   return (
-    <div className="flex min-h-screen flex-col bg-white lg:min-h-screen lg:flex-row lg:items-stretch">
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#1c6fd4] via-brand-blue to-[#1e5bb8] px-5 py-4 lg:hidden">
+    <div className="cm-canvas flex min-h-screen flex-col lg:min-h-screen lg:flex-row lg:items-stretch">
+      <div className="cm-brand-panel relative overflow-hidden rounded-b-3xl px-5 py-4 lg:hidden">
         <HeroDecorations />
         <div className="relative z-10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -74,7 +74,7 @@ export function AuthSplitShell({ children }: AuthSplitShellProps) {
         </div>
       </div>
 
-      <aside className="relative hidden min-h-screen shrink-0 flex-col overflow-hidden bg-gradient-to-br from-[#1c6fd4] via-brand-blue to-[#1e5bb8] lg:flex lg:w-1/2 lg:min-w-0">
+      <aside className="relative hidden min-h-screen shrink-0 flex-col overflow-hidden cm-brand-panel lg:flex lg:w-1/2 lg:min-w-0">
         <HeroDecorations />
 
         <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-7 px-6 xl:px-8">
@@ -142,7 +142,7 @@ export function AuthSplitShell({ children }: AuthSplitShellProps) {
         <div className="relative z-10 shrink-0 px-6 pb-6 pt-2 xl:px-8 xl:pb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full border-2 border-white/85 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition hover:bg-white/20"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             {dict.common.backHome}
@@ -150,8 +150,8 @@ export function AuthSplitShell({ children }: AuthSplitShellProps) {
         </div>
       </aside>
 
-      <div className="flex min-h-0 w-full flex-1 flex-col bg-slate-50/90 lg:min-h-0 lg:w-1/2 lg:min-w-0 lg:flex-none lg:overflow-y-auto">
-        <div className="mx-auto my-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-6 lg:max-w-3xl lg:py-7 lg:pl-10 lg:pr-8 xl:pl-12">
+      <div className="flex min-h-0 w-full flex-1 flex-col lg:min-h-0 lg:w-1/2 lg:min-w-0 lg:flex-none lg:overflow-y-auto">
+        <div className="cm-rise mx-auto my-auto w-full max-w-md px-4 py-5 sm:px-6 sm:py-8 lg:max-w-[30rem] lg:px-8">
           <div className="hidden justify-end pb-3 lg:flex">
             <LanguageSwitcher size="sm" variant="pill" />
           </div>

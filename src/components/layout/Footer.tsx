@@ -28,14 +28,14 @@ const socialBtnClass =
 const linkClass = "text-sm text-slate-400 transition-colors hover:text-sky-400";
 
 const headingClass =
-  "mb-4 text-xs font-black uppercase tracking-widest text-white";
+  "mb-3 text-xs font-black uppercase tracking-widest text-white";
 
 export function Footer() {
   const { dict } = useLanguage();
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/[0.06] bg-[#13151a] pb-10 pt-14 text-slate-300">
+    <footer className="relative overflow-hidden border-t border-white/[0.06] bg-[#13151a] pb-6 pt-10 text-slate-300">
       <div
         className="pointer-events-none absolute -bottom-4 left-1/2 -translate-x-1/2 select-none whitespace-nowrap font-bold leading-none text-white/[0.03]"
         style={{ fontSize: "clamp(4rem, 18vw, 14rem)" }}
@@ -45,21 +45,21 @@ export function Footer() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div className="md:col-span-2">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
+          <div className="col-span-2">
             <Link href="/" className="inline-block">
               <Image
                 src="/white_logo.png"
                 alt="CarraMarket"
                 width={160}
                 height={50}
-                className="mb-4 h-10 w-auto object-contain object-left"
+                className="mb-3 h-9 w-auto object-contain object-left"
               />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-slate-400">
               {dict.home.heroSubtitle}
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               <a
                 href={SOCIAL.tiktok}
                 target="_blank"
@@ -86,7 +86,7 @@ export function Footer() {
 
           <div>
             <h4 className={headingClass}>{dict.footer.auctionsHeading}</h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               <li>
                 <Link href="/auctions" className={linkClass}>
                   {dict.footer.liveAuctions}
@@ -112,7 +112,7 @@ export function Footer() {
 
           <div>
             <h4 className={headingClass}>{dict.footer.companyHeading}</h4>
-            <ul className="mb-6 space-y-2.5">
+            <ul className="mb-5 space-y-2">
               <li>
                 <Link href="/#faq" className={linkClass}>
                   {dict.footer.faq}
@@ -120,7 +120,7 @@ export function Footer() {
               </li>
             </ul>
             <h4 className={headingClass}>{dict.footer.legalHeading}</h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               <li>
                 <Link href="/terms" className={linkClass}>
                   {dict.footer.terms}
@@ -135,7 +135,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 text-xs text-slate-500 sm:flex-row sm:items-center">
+        <div className="mt-8 flex flex-col items-start justify-between gap-2 border-t border-white/10 pt-5 text-xs text-slate-500 sm:flex-row sm:items-center">
           <p>© {year} CarraMarket. {dict.footer.copyright}</p>
           <p className="text-slate-600 sm:text-right">
             {dict.footer.tagline}
