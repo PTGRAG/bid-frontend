@@ -162,39 +162,21 @@ export async function participateInAuction(
 }
 
 /** Verify Chapa transaction after return from checkout. */
+// The server places exactly the bids that were paid for at checkout, so only the
+// transaction reference is sent here.
 export async function verifyChapaPayment(
   txRef: string,
-  bidValueOrValues?: number | number[],
   signal?: AbortSignal
 ): Promise<VerifyPaymentResult> {
-  const body: Record<string, unknown> = { txRef };
-  if (Array.isArray(bidValueOrValues) && bidValueOrValues.length > 0) {
-    body.bidValues = bidValueOrValues;
-  } else if (typeof bidValueOrValues === "number" && bidValueOrValues > 0) {
-    body.bidValue = bidValueOrValues;
-  }
-
   const res = await apiFetch<ApiResponse<VerifyPaymentResult>>(
     `/api/public/payments/verify`,
     {
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify({ txRef }),
       signal,
     }
   );
   return (res.data ?? res) as VerifyPaymentResult;
-}
-
-export async function placeBid(
-  auctionId: string,
-  bidValue: number
-): Promise<Bid> {
-  const res = await apiFetch<ApiResponse<unknown>>(`/api/public/bids`, {
-    method: "POST",
-    body: JSON.stringify({ auctionId, bidValue }),
-  });
-  const raw = unwrapData(res) ?? res.data ?? res;
-  return BidSchema.parse(raw);
 }
 
 export async function updateBid(

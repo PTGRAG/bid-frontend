@@ -125,13 +125,7 @@ export function BidPanel({
   };
 
   const verifyMutation = useMutation({
-    mutationFn: ({
-      txRef,
-      bidValues,
-    }: {
-      txRef: string;
-      bidValues?: number[];
-    }) => {
+    mutationFn: ({ txRef }: { txRef: string }) => {
       // Chapa reports "pending" for a few seconds after the return redirect. Poll briefly
       // instead of treating that as the final answer (the server never fails a pending payment).
       return (async () => {
@@ -141,7 +135,7 @@ export function BidPanel({
           const controller = new AbortController();
           const timeout = window.setTimeout(() => controller.abort(), 20000);
           try {
-            last = await verifyChapaPayment(txRef, bidValues, controller.signal);
+            last = await verifyChapaPayment(txRef, controller.signal);
           } finally {
             window.clearTimeout(timeout);
           }
@@ -202,22 +196,7 @@ export function BidPanel({
       searchParams.get("tx_ref") ||
       searchParams.get("trx_ref") ||
       searchParams.get("txRef");
-    const urlBidRaw = searchParams.get("bid_value");
-    const urlBidsRaw = searchParams.get("bid_values");
     let txRefToVerify = urlTxRef || "";
-    let bidValuesToVerify: number[] | undefined;
-
-    if (urlBidsRaw) {
-      const parsed = urlBidsRaw
-        .split(/[,_;|]+/)
-        .map((p) => Number.parseFloat(p.trim()))
-        .filter((n) => Number.isFinite(n) && n > 0)
-        .map(roundMoney);
-      if (parsed.length > 0) bidValuesToVerify = parsed;
-    } else if (urlBidRaw) {
-      const one = Number.parseFloat(urlBidRaw);
-      if (Number.isFinite(one) && one > 0) bidValuesToVerify = [roundMoney(one)];
-    }
 
     if (!txRefToVerify) {
       try {
@@ -227,8 +206,6 @@ export function BidPanel({
         if (stored) {
           const parsed = JSON.parse(stored) as {
             txRef?: string;
-            bidValue?: number;
-            bidValues?: number[];
             ts?: number;
           };
           if (
@@ -236,13 +213,6 @@ export function BidPanel({
             (!parsed.ts || Date.now() - parsed.ts < 30 * 60 * 1000)
           ) {
             txRefToVerify = parsed.txRef;
-            if (!bidValuesToVerify?.length) {
-              if (parsed.bidValues?.length) {
-                bidValuesToVerify = parsed.bidValues.map(roundMoney);
-              } else if (parsed.bidValue) {
-                bidValuesToVerify = [roundMoney(parsed.bidValue)];
-              }
-            }
           }
         }
       } catch {
@@ -252,10 +222,7 @@ export function BidPanel({
 
     if (txRefToVerify && verifiedRef.current !== txRefToVerify) {
       verifiedRef.current = txRefToVerify;
-      verifyMutation.mutate({
-        txRef: txRefToVerify,
-        bidValues: bidValuesToVerify,
-      });
+      verifyMutation.mutate({ txRef: txRefToVerify });
     }
   }, [auction.id, searchParams, participating, myBids.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
