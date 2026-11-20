@@ -129,7 +129,8 @@ export default function AuctionDetailPage({
         </div>
 
         {/* Public Audit Log & Verification for completed auctions */}
-        {["executed", "closed"].includes(statusKey) && (
+        {(["executed", "closed"].includes(statusKey) ||
+          (statusKey === "cancelled" && auction.winnerPaymentStatus === "unpaid")) && (
           <div className="mt-12">
             <CompletedAuctionAudit auctionId={auction.id} />
           </div>

@@ -7,6 +7,56 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { queryKeys } from "@/lib/query-keys";
 import { listMyParticipations } from "@/services/auctions.service";
 import { auctionCoverImage } from "@/lib/auction-media";
+import type { Auction } from "@/services/auctions.service";
+
+type Dict = ReturnType<typeof useLanguage>["dict"];
+
+/** The viewer's own outcome as a short badge (pay only if you win). */
+function resultBadge(
+  auction: Auction,
+  dict: Dict,
+  t: ReturnType<typeof useLanguage>["t"]
+): { label: string; sub?: string; className: string } | null {
+  const my = auction.myResult;
+  if (!my) return null;
+  switch (my.outcome) {
+    case "won_pay_now": {
+      let sub: string | undefined;
+      if (my.dueAt) {
+        const d = new Date(my.dueAt);
+        if (!Number.isNaN(d.getTime())) {
+          sub = t("dashboard.resultPayBy", {
+            date: d.toLocaleString("en-GB", {
+              timeZone: "Africa/Addis_Ababa",
+              day: "numeric",
+              month: "short",
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          });
+        }
+      }
+      return {
+        label: dict.dashboard.resultPayNow,
+        sub,
+        className: "border-amber-300 bg-amber-50 text-amber-900",
+      };
+    }
+    case "won_paid":
+      return { label: dict.dashboard.resultWonPaid, className: "border-emerald-200 bg-emerald-50 text-emerald-800" };
+    case "won_expired":
+      return { label: dict.dashboard.resultWonExpired, className: "border-slate-200 bg-slate-50 text-slate-600" };
+    case "lost":
+      return { label: dict.dashboard.resultLost, className: "border-slate-200 bg-slate-50 text-slate-600" };
+    case "no_winner":
+      return { label: dict.dashboard.resultNoWinner, className: "border-slate-200 bg-slate-50 text-slate-600" };
+    case "cancelled":
+      return { label: dict.dashboard.resultCancelled, className: "border-slate-200 bg-slate-50 text-slate-600" };
+    case "pending":
+      return { label: dict.dashboard.resultPending, className: "border-sky-200 bg-sky-50 text-sky-800" };
+  }
+  return null;
+}
 
 function MyAuctionsContent() {
   const { dict, t } = useLanguage();
@@ -59,6 +109,7 @@ function MyAuctionsContent() {
                 dict.auctions.filters[
                   auction.status as keyof typeof dict.auctions.filters
                 ] ?? String(auction.status);
+              const badge = resultBadge(auction, dict, t);
               return (
                 <li key={participation.id || auction.id}>
                   <Link
@@ -86,14 +137,14 @@ function MyAuctionsContent() {
                           : ` · ${dict.dashboard.noBidsYet}`}
                       </p>
                     </div>
-                    <div className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        {dict.dashboard.totalBidsLabel}
-                      </p>
-                      <p className="text-base font-extrabold text-[var(--brand-blue)]">
-                        {(auction.totalBids ?? 0).toLocaleString()}
-                      </p>
-                    </div>
+                    {badge ? (
+                      <div className={`shrink-0 rounded-xl border px-3 py-2 text-right ${badge.className}`}>
+                        <p className="text-xs font-bold">{badge.label}</p>
+                        {badge.sub && (
+                          <p className="mt-0.5 text-[11px] font-semibold">{badge.sub}</p>
+                        )}
+                      </div>
+                    ) : null}
                   </Link>
                 </li>
               );

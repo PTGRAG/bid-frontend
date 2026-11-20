@@ -18,6 +18,10 @@ export interface User {
   picture?: string;
   /** "password" | "google" from API */
   authProvider?: string;
+  telegramId?: number | null;
+  /** Opt-in result messages for auctions you did not win (in-app is always on). */
+  notifyResultsEmail?: boolean;
+  notifyResultsTelegram?: boolean;
   createdAt: string;
 }
 
@@ -211,6 +215,17 @@ export interface UpdateProfilePayload {
 
 export async function updateProfile(payload: UpdateProfilePayload): Promise<AuthResponse> {
   const response = await apiFetch<ApiResponse<AuthResponse>>("/api/me", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+}
+
+export async function updateNotificationPreferences(payload: {
+  notifyResultsEmail?: boolean;
+  notifyResultsTelegram?: boolean;
+}): Promise<AuthResponse> {
+  const response = await apiFetch<ApiResponse<AuthResponse>>("/api/me/notification-preferences", {
     method: "PATCH",
     body: JSON.stringify(payload),
   });

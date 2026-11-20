@@ -265,16 +265,21 @@ function getIconForType(type: string) {
         case 'auction_submitted':
             return '📝';
         case 'auction_winner':
+        case 'winner_paid':
         case 'bid_drawn':
         case 'winner_confirmation_request':
             return '🏆';
         case 'auction_no_winner':
         case 'auction_closed':
+        case 'auction_result':
             return '🔒';
         case 'auction_activated':
             return '🟢';
         case 'auction_postponed':
+        case 'winner_payment_reminder':
             return '⏳';
+        case 'winner_payment_expired':
+            return '⌛';
         case 'auction_cancelled':
         case 'bid_rejected':
         case 'auction_rejected':
