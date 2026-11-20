@@ -4,10 +4,12 @@ import {
   AuctionSchema,
   AuctionsListSchema,
   BidSchema,
+  WinnerOfferSchema,
   type Auction,
   type AuctionParticipation,
   type AuctionsList,
   type Bid,
+  type WinnerOffer,
 } from "@/lib/schemas";
 
 export interface StaffAuctionPayload {
@@ -203,6 +205,20 @@ export async function listStaffAuctionBids(
         .map((r) => r.data)
     : [];
   return { items, total: Number(raw.total ?? items.length) };
+}
+
+/** Every "pay your bid" offer for a drawn auction, with contact details (admin only). */
+export async function listStaffWinnerOffers(auctionId: string): Promise<WinnerOffer[]> {
+  const res = await apiFetch<ApiResponse<unknown>>(
+    `/api/auctions/${encodeURIComponent(auctionId)}/winner-offers`
+  );
+  const raw = (unwrapData(res) ?? {}) as { items?: unknown[] };
+  return Array.isArray(raw.items)
+    ? raw.items
+        .map((x) => WinnerOfferSchema.safeParse(x))
+        .filter((r) => r.success)
+        .map((r) => r.data)
+    : [];
 }
 
 export type StaffUserRole = "super_admin" | "admin" | "compliance";
@@ -468,6 +484,8 @@ export interface StaffPaymentRow {
   userId?: string;
   auctionId?: string;
   participationId?: string;
+  /** "entry" (ticket checkout) or "winner" (winner paying their bid). */
+  purpose?: string;
 }
 
 function emptyChart(): StaffChartSeries {

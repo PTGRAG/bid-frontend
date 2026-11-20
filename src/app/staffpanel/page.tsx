@@ -61,11 +61,12 @@ import {
   executeStaffAuctionDraw,
   listStaffAuctionParticipants,
   listStaffAuctionBids,
+  listStaffWinnerOffers,
   uploadStaffMedia,
   type StaffAuctionPayload,
 } from "@/services/staff.service";
 import { auctionCoverImage, auctionImageList } from "@/lib/auction-media";
-import type { Auction } from "@/lib/schemas";
+import type { Auction, WinnerOffer } from "@/lib/schemas";
 
 type StaffSection =
   | "analytics"
@@ -720,6 +721,110 @@ function AuctionFormModal({
   );
 }
 
+const OFFER_STATUS_STYLE: Record<string, string> = {
+  awaiting_payment: "bg-amber-100 text-amber-900",
+  paid: "bg-emerald-100 text-emerald-800",
+  expired: "bg-slate-200 text-slate-700",
+};
+
+const WINNER_PAYMENT_LABEL: Record<string, { label: string; cls: string }> = {
+  awaiting_payment: { label: "Awaiting winner payment", cls: "bg-amber-100 text-amber-900" },
+  paid: { label: "Winner paid", cls: "bg-emerald-100 text-emerald-800" },
+  unpaid: { label: "Unpaid: no winner paid", cls: "bg-rose-100 text-rose-800" },
+};
+
+/** Who was offered the prize, in order, with contact details so staff can chase payment. */
+function WinnerOffersTable({
+  loading,
+  error,
+  offers,
+}: {
+  loading: boolean;
+  error: boolean;
+  offers: WinnerOffer[];
+}) {
+  if (loading) {
+    return <p className="py-10 text-center text-sm text-slate-500">Loading winner payments…</p>;
+  }
+  if (error) {
+    return (
+      <p className="py-10 text-center text-sm text-rose-600">
+        Could not load winner payments. Only admins can see this.
+      </p>
+    );
+  }
+  if (!offers.length) {
+    return (
+      <p className="py-10 text-center text-sm text-slate-500">
+        No winner payment for this auction (drawn before pay-on-win, or there was no winner).
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-slate-500">
+        The winner has 48 hours to pay their bid. If they do not, the prize goes to the next
+        lowest unique bid (up to 3 tries), then the auction is cancelled.
+      </p>
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 text-xs uppercase text-slate-500">
+            <th className="pb-2 font-bold">#</th>
+            <th className="pb-2 font-bold">Winner</th>
+            <th className="pb-2 font-bold">Bid (ETB)</th>
+            <th className="pb-2 font-bold">Pay by</th>
+            <th className="pb-2 font-bold">Status</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {offers.map((o) => (
+            <tr key={o.id} className="align-top">
+              <td className="py-2.5 font-bold text-slate-900">{o.attempt}</td>
+              <td className="py-2.5">
+                <p className="font-semibold text-slate-900">{o.participantName || "Unknown"}</p>
+                {o.participantPhone && (
+                  <a
+                    href={`tel:${o.participantPhone}`}
+                    className="block text-xs font-semibold text-[var(--brand-blue)] hover:underline"
+                  >
+                    {o.participantPhone}
+                  </a>
+                )}
+                {o.participantEmail && (
+                  <p className="text-xs text-slate-500">{o.participantEmail}</p>
+                )}
+                <p className="font-mono text-[10px] text-slate-400">{o.participantId}</p>
+              </td>
+              <td className="py-2.5 font-bold text-slate-900">{o.bidValue.toFixed(2)}</td>
+              <td className="py-2.5 text-xs text-slate-600">
+                {new Date(o.dueAt).toLocaleString()}
+                <p className="text-slate-400">Reminders sent: {o.remindersSent}</p>
+              </td>
+              <td className="py-2.5">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
+                    OFFER_STATUS_STYLE[o.status] ?? "bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {o.status.replace("_", " ")}
+                </span>
+                {o.paidAt && (
+                  <p className="mt-1 text-xs text-slate-500">
+                    {new Date(o.paidAt).toLocaleString()}
+                  </p>
+                )}
+                {o.paymentTxRef && (
+                  <p className="font-mono text-[10px] text-slate-400">{o.paymentTxRef}</p>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function AuctionActivityModal({
   auction,
   onClose,
@@ -727,7 +832,16 @@ function AuctionActivityModal({
   auction: Auction;
   onClose: () => void;
 }) {
-  const [tab, setTab] = useState<"bids" | "participants">("bids");
+  const drawn = auction.status === "executed" || auction.status === "cancelled";
+  const [tab, setTab] = useState<"bids" | "participants" | "winner">(
+    drawn ? "winner" : "bids"
+  );
+
+  const offersQuery = useQuery({
+    queryKey: ["staff", "auction", auction.id, "winner-offers"],
+    queryFn: () => listStaffWinnerOffers(auction.id),
+    enabled: drawn,
+  });
 
   const bidsQuery = useQuery({
     queryKey: ["staff", "auction", auction.id, "bids"],
@@ -786,10 +900,30 @@ function AuctionActivityModal({
             <Users className="h-4 w-4" />
             Participants ({partsQuery.data?.total ?? 0})
           </button>
+          {drawn && (
+            <button
+              type="button"
+              onClick={() => setTab("winner")}
+              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-xs font-bold uppercase tracking-wider ${
+                tab === "winner"
+                  ? "border-[var(--brand-blue)] text-[var(--brand-blue)]"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <Trophy className="h-4 w-4" />
+              Winner payment
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-          {tab === "bids" ? (
+          {tab === "winner" ? (
+            <WinnerOffersTable
+              loading={offersQuery.isLoading}
+              error={offersQuery.isError}
+              offers={offersQuery.data ?? []}
+            />
+          ) : tab === "bids" ? (
             bidsQuery.isLoading ? (
               <p className="py-10 text-center text-sm text-slate-500">
                 Loading bids…
@@ -1236,6 +1370,21 @@ export default function StaffPanelPage() {
                               ETB
                             </span>
                           )}
+                          {auction.winnerPaymentStatus &&
+                            WINNER_PAYMENT_LABEL[auction.winnerPaymentStatus] && (
+                              <button
+                                type="button"
+                                onClick={() => setActivityAuction(auction)}
+                                className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                                  WINNER_PAYMENT_LABEL[auction.winnerPaymentStatus].cls
+                                }`}
+                              >
+                                {WINNER_PAYMENT_LABEL[auction.winnerPaymentStatus].label}
+                                {auction.winnerPaymentStatus === "awaiting_payment" &&
+                                  auction.winnerPaymentDueAt &&
+                                  ` · due ${new Date(auction.winnerPaymentDueAt).toLocaleString()}`}
+                              </button>
+                            )}
                         </div>
                       </div>
                     </div>
