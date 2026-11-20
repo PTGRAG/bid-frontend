@@ -4,11 +4,15 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, User, Lock, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, User, Lock, Eye, EyeOff, Bell } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { updateProfile, changePassword } from "@/services/auth.service";
+import {
+  updateProfile,
+  changePassword,
+  updateNotificationPreferences,
+} from "@/services/auth.service";
 import { toastApiError } from "@/lib/toast-api-error";
 import { validatePasswordPolicy } from "@/lib/passwordPolicy";
 import { PhonePrefixInput } from "@/components/auth/PhonePrefixInput";
@@ -35,6 +39,28 @@ function AccountSettingsContent() {
   const [passwordSaving, setPasswordSaving] = useState(false);
 
   const isGoogleOnly = user?.authProvider === "google";
+  const [prefsSaving, setPrefsSaving] = useState(false);
+  // Telegram sign-ups get a placeholder address nobody reads.
+  const hasRealEmail = Boolean(
+    user?.email && user.email.includes("@") && !user.email.toLowerCase().endsWith("@carramarket.com")
+  );
+  const hasTelegram = Boolean(user?.telegramId);
+
+  const togglePreference = async (
+    key: "notifyResultsEmail" | "notifyResultsTelegram",
+    value: boolean
+  ) => {
+    setPrefsSaving(true);
+    try {
+      await updateNotificationPreferences({ [key]: value });
+      await refreshUser();
+      toast.success(dict.account.preferencesSaved);
+    } catch (err) {
+      toastApiError(err, dict.account.preferencesError);
+    } finally {
+      setPrefsSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -179,6 +205,54 @@ function AccountSettingsContent() {
             {profileSaving ? dict.account.saving : dict.account.saveChanges}
           </Button>
         </form>
+      </section>
+
+      {/* Auction result messages (pay only if you win) */}
+      <section className="rounded-3xl border border-slate-100/80 bg-white p-6 shadow-lg shadow-slate-100/40 mb-8">
+        <div className="mb-3 flex items-center gap-2 text-slate-900">
+          <Bell className="h-5 w-5 text-[var(--brand-blue)]" />
+          <h2 className="text-lg font-bold">{dict.account.notificationsTitle}</h2>
+        </div>
+        <p className="mb-4 text-sm text-slate-600">{dict.account.notificationsDesc}</p>
+        <div className="space-y-3">
+          {(
+            [
+              {
+                key: "notifyResultsEmail" as const,
+                label: dict.account.notifyResultsEmail,
+                hint: dict.account.notifyResultsEmailHint,
+                available: hasRealEmail,
+                checked: Boolean(user?.notifyResultsEmail),
+              },
+              {
+                key: "notifyResultsTelegram" as const,
+                label: dict.account.notifyResultsTelegram,
+                hint: dict.account.notifyResultsTelegramHint,
+                available: hasTelegram,
+                checked: Boolean(user?.notifyResultsTelegram),
+              },
+            ]
+          ).map((pref) => (
+            <label
+              key={pref.key}
+              className="flex items-start gap-3 rounded-xl border border-slate-200 px-4 py-3"
+            >
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 accent-[var(--brand-blue)]"
+                checked={pref.checked}
+                disabled={prefsSaving || (!pref.available && !pref.checked)}
+                onChange={(e) => void togglePreference(pref.key, e.target.checked)}
+              />
+              <span>
+                <span className="block text-sm font-semibold text-slate-900">{pref.label}</span>
+                {!pref.available && (
+                  <span className="block text-xs text-slate-500">{pref.hint}</span>
+                )}
+              </span>
+            </label>
+          ))}
+        </div>
       </section>
 
       {/* Password Security Card */}

@@ -19,6 +19,7 @@ import {
   type Bid,
 } from "@/services/auctions.service";
 import { AnalyticsEvents, track } from "@/lib/analytics";
+import { WinnerResultPanel } from "@/components/auctions/WinnerResultPanel";
 
 const MAX_PACK = 10;
 
@@ -74,22 +75,20 @@ export function BidPanel({
     draftAmountNum > 0;
   const effectiveBids =
     packTags.length > 0 ? packTags : hasValidDraft ? [draftAmountNum] : [];
-  const packBidsSum = roundMoney(
-    effectiveBids.reduce((sum, val) => sum + Number(val || 0), 0)
-  );
-  // Free entrance waives the entrance fee only: the customer still pays their bid amount(s)
-  // through Chapa. The server decides eligibility; checkout re-validates it.
+  // Pay only if you win: a ticket costs the entrance fee only. The bid amount is never charged
+  // here; the winner pays it after the draw. The server decides free-entrance eligibility and
+  // checkout re-validates it.
   const freeEligible = Boolean(auction.userEligibleForFreeEntrance);
   const freeUnlimited = Boolean(auction.freeEntranceUnlimited);
   const freeRemaining = Number(auction.freeEntranceRemaining ?? 0);
   const freeLimit = Number(auction.freeEntranceLimit ?? 0);
-  // Free entrance waives the entrance fee of the FIRST bid only (index 0); every other bid in
-  // the pack still pays fee + bid. Mirrors domain.CheckoutCharge on the server.
+  // Free entrance makes the FIRST ticket (index 0) free; every other ticket pays the entrance
+  // fee. Mirrors domain.CheckoutCharge on the server.
   const feeBidCount = freeEligible
     ? Math.max(effectiveBids.length - 1, 0)
     : effectiveBids.length;
   const packEntranceSum = roundMoney(feeBidCount * entranceFeeNum);
-  const packTotal = roundMoney(packEntranceSum + packBidsSum);
+  const packTotal = packEntranceSum;
   const existingValues = new Set(
     myBids.map((b) => roundMoney(Number(b.bidValue)).toFixed(2))
   );
@@ -114,13 +113,18 @@ export function BidPanel({
     }
   };
 
-  const finishVerifyUI = (verified: boolean) => {
+  const finishVerifyUI = (verified: boolean, winnerPayment = false) => {
     clearPendingChapa();
     setPackTags([]);
     invalidate();
+    void qc.invalidateQueries({ queryKey: [...queryKeys.all, "me"] });
     router.replace(`/auctions/${auction.id}`);
     if (verified) {
-      toast.success(dict.auctionDetail.paymentVerifiedSuccess);
+      toast.success(
+        winnerPayment
+          ? dict.auctionDetail.winnerPaymentSuccess
+          : dict.auctionDetail.paymentVerifiedSuccess
+      );
     }
   };
 
@@ -142,7 +146,8 @@ export function BidPanel({
           const inFlight = ["pending", "created", "processing", "initiated"].includes(
             String(last.status ?? "").toLowerCase()
           );
-          if (last.verified || last.participating || !inFlight) return last;
+          const isWinnerPayment = last.purpose === "winner";
+          if (last.verified || (!isWinnerPayment && last.participating) || !inFlight) return last;
           if (attempt < MAX_ATTEMPTS - 1) {
             await new Promise((r) => window.setTimeout(r, 3000));
           }
@@ -155,8 +160,11 @@ export function BidPanel({
         auction_id: auction.id,
         verified: Boolean(res.verified),
       });
-      const done = Boolean(res.verified || res.participating);
-      finishVerifyUI(done);
+      const winnerPayment = res.purpose === "winner";
+      const done = winnerPayment
+        ? Boolean(res.verified)
+        : Boolean(res.verified || res.participating);
+      finishVerifyUI(done, winnerPayment);
       if (
         !done &&
         ["pending", "created", "processing", "initiated"].includes(
@@ -177,6 +185,19 @@ export function BidPanel({
   });
 
   useEffect(() => {
+    // Back from paying the winning bid: always verify (the winner has of course already joined).
+    const winnerReturnRef =
+      searchParams.get("winner_payment") === "1"
+        ? searchParams.get("tx_ref") || searchParams.get("trx_ref") || searchParams.get("txRef")
+        : null;
+    if (winnerReturnRef) {
+      if (verifiedRef.current !== winnerReturnRef) {
+        verifiedRef.current = winnerReturnRef;
+        verifyMutation.mutate({ txRef: winnerReturnRef });
+      }
+      return;
+    }
+
     // Already joined (e.g. webhook fulfilled while on Chapa) — don't keep verifying.
     if (participating || myBids.length > 0) {
       const hasReturnRef =
@@ -318,7 +339,12 @@ export function BidPanel({
         window.location.href = result.checkoutUrl;
         return;
       }
-      toast.success(dict.auctionDetail.joinSuccess);
+      // One free ticket: issued right away, nothing to pay at Chapa.
+      toast.success(
+        result.verified || result.participating
+          ? dict.auctionDetail.freeTicketSuccess
+          : dict.auctionDetail.joinSuccess
+      );
       setPackTags([]);
       invalidate();
     },
@@ -376,46 +402,14 @@ export function BidPanel({
     participateMutation.mutate(bidsToSubmit);
   };
 
-  if (auction.status === "executed") {
-    return (
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-5">
-        <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
-          {dict.auctionDetail.auctionComplete}
-        </p>
-        {auction.winnerName && (
-          <p className="mt-2 text-base font-bold text-slate-900">
-            {dict.winners.winner}:{" "}
-            <span className="text-emerald-800">{auction.winnerName}</span>
-          </p>
-        )}
-        {auction.winnerBidValue != null ? (
-          <p className="mt-1.5 text-lg font-bold text-slate-900">
-            {t("auctionDetail.winningBid", {
-              amount: formatCurrency(Number(auction.winnerBidValue)),
-            })}
-          </p>
-        ) : (
-          <p className="mt-2 text-sm text-slate-600">
-            {dict.auctionDetail.resultsIn}
-          </p>
-        )}
-        {/* Total bids temporarily hidden
-        {hasJoined && (
-          <div className="mt-3 flex items-center justify-between rounded-xl border border-emerald-200/80 bg-white/80 px-3.5 py-2.5 text-sm">
-            <span className="font-semibold text-slate-600">
-              {dict.auctionDetail.totalBids}
-            </span>
-            <span className="font-extrabold text-emerald-800">
-              {totalBidsCount.toLocaleString()}
-            </span>
-          </div>
-        )}
-        */}
-      </div>
-    );
-  }
-
-  if (auction.status === "cancelled") {
+  if (auction.status === "executed" || auction.status === "cancelled") {
+    const drawn =
+      auction.status === "executed" ||
+      Boolean(auction.winnerPaymentStatus) ||
+      Boolean(auction.myResult && auction.myResult.outcome !== "cancelled");
+    if (drawn) {
+      return <WinnerResultPanel auction={auction} verifying={verifyMutation.isPending} />;
+    }
     return (
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
         {dict.auctionDetail.cancelled}
@@ -602,8 +596,10 @@ export function BidPanel({
                 <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs text-slate-600 space-y-1">
                   <div className="flex items-center justify-between">
                     <span>
-                      {dict.auctionDetail.entranceFee} ({effectiveBids.length} ×{" "}
-                      {formatCurrency(entranceFeeNum)})
+                      {t("auctionDetail.ticketsLabel", {
+                        count: String(effectiveBids.length),
+                        fee: formatCurrency(entranceFeeNum),
+                      })}
                     </span>
                     {freeEligible ? (
                       <span className="flex items-center gap-1.5 font-semibold">
@@ -631,16 +627,13 @@ export function BidPanel({
                       {dict.auctionDetail.freeFirstBidLine}
                     </p>
                   )}
-                  <div className="flex items-center justify-between">
-                    <span>{dict.auctionDetail.yourBidValue}</span>
-                    <span className="font-semibold text-slate-800">
-                      {formatCurrency(packBidsSum)}
-                    </span>
-                  </div>
                   <div className="flex items-center justify-between border-t border-slate-200 pt-1 text-slate-900 font-bold">
                     <span>Total</span>
                     <span>{formatCurrency(packTotal)}</span>
                   </div>
+                  <p className="text-[11px] font-semibold text-[var(--brand-blue)]">
+                    {dict.auctionDetail.payOnlyIfWinNote}
+                  </p>
                 </div>
               </div>
             )}
@@ -665,13 +658,14 @@ export function BidPanel({
             >
               {participateMutation.isPending
                 ? dict.auctionDetail.redirectingToChapa
-                : t("auctionDetail.placePackAndPayChapa", {
-                    count: String(Math.max(effectiveBids.length, 1)),
-                    // Free entrance: the total is the bid amount only (never fall back to the fee).
-                    amount: formatCurrency(
-                      packTotal || (freeEligible ? 0 : entranceFeeNum)
-                    ),
-                  })}
+                : freeEligible && effectiveBids.length <= 1
+                  ? dict.auctionDetail.getFreeTicketBtn
+                  : t("auctionDetail.placePackAndPayChapa", {
+                      count: String(Math.max(effectiveBids.length, 1)),
+                      amount: formatCurrency(
+                        effectiveBids.length > 0 ? packTotal : entranceFeeNum
+                      ),
+                    })}
             </Button>
           </div>
 

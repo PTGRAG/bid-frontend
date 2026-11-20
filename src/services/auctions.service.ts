@@ -11,11 +11,13 @@ import {
   type AuctionAuditEntry,
   type AuctionParticipation,
   type Bid,
+  type MyAuctionResult,
   type PublicAuctionCard,
   type PublicAuctionsList,
 } from "@/lib/schemas";
 
 export type {
+  MyAuctionResult,
   Auction,
   AuctionAudit,
   AuctionAuditEntry,
@@ -107,8 +109,10 @@ export interface ParticipateResult {
   participation?: AuctionParticipation;
   bid?: Bid;
   bids?: Bid[];
-  /** True when the entrance fee was waived (free entrance): `amount` is the bid total only. */
+  /** True when the first ticket's entrance fee was waived (free entrance). */
   entranceWaived?: boolean;
+  /** Set when a single free ticket was issued without Chapa (nothing to pay). */
+  verified?: boolean;
   amount?: number | string;
   message?: string;
 }
@@ -121,11 +125,15 @@ export interface VerifyPaymentResult {
   participating?: boolean;
   participation?: AuctionParticipation;
   bids?: Bid[];
+  /** "entry" (tickets) or "winner" (the winner paying their bid). */
+  purpose?: string;
+  myResult?: MyAuctionResult | null;
 }
 
 /**
- * Pay entrance fee × ticket count & place bid pack via Chapa checkout.
- * With free entrance the entrance fee is waived and only the bid total is charged.
+ * Buy tickets for a bid pack: each ticket costs the entrance fee only. The bid amount is never
+ * charged here; only the winner pays it after the draw (see payWinningBid).
+ * With free entrance the first ticket's fee is waived; one free ticket needs no Chapa checkout.
  */
 export async function participateInAuction(
   auctionId: string,
@@ -279,4 +287,26 @@ export async function listMyParticipations(params?: {
   } catch {
     return { items: [], total: 0 };
   }
+}
+
+export interface WinnerPaymentStart {
+  checkoutUrl: string;
+  txRef: string;
+  amount?: number | string;
+  dueAt?: string;
+}
+
+/** Start the Chapa checkout for the signed-in winner's bid amount (server sets the amount). */
+export async function payWinningBid(
+  auctionId: string,
+  returnUrl?: string
+): Promise<WinnerPaymentStart> {
+  const res = await apiFetch<ApiResponse<WinnerPaymentStart>>(
+    `/api/public/auctions/${auctionId}/winner-payment`,
+    {
+      method: "POST",
+      body: JSON.stringify(returnUrl ? { returnUrl } : {}),
+    }
+  );
+  return (res.data ?? res) as WinnerPaymentStart;
 }

@@ -36,6 +36,11 @@ export const PublicAuctionCardSchema = z.object({
   endsAt: z.string().optional().nullable(),
   createdAt: z.string().optional(),
   winnerName: z.string().optional().nullable(),
+  /**
+   * Pay only if you win: "" (no draw yet), "awaiting_payment", "paid", or "unpaid" (every
+   * offered winner missed the deadline). The winner is only named once they have paid.
+   */
+  winnerPaymentStatus: z.string().optional().nullable(),
   // Free entrance is opt-in per auction (staff switch). Limit 0 = "all".
   freeEntranceEnabled: z.boolean().optional().default(false),
   freeEntranceLimit: z.coerce.number().optional().default(100),
@@ -45,6 +50,24 @@ export const PublicAuctionCardSchema = z.object({
 });
 
 export type PublicAuctionCard = z.infer<typeof PublicAuctionCardSchema>;
+
+/** The signed-in participant's own outcome on an auction (server-computed). */
+export const MyAuctionResultSchema = z.object({
+  outcome: z.enum([
+    "pending",
+    "won_pay_now",
+    "won_paid",
+    "won_expired",
+    "lost",
+    "no_winner",
+    "cancelled",
+  ]).or(z.string()),
+  bidValue: z.coerce.number().optional().nullable(),
+  dueAt: z.string().optional().nullable(),
+  attempt: z.coerce.number().optional().nullable(),
+});
+
+export type MyAuctionResult = z.infer<typeof MyAuctionResultSchema>;
 
 export const AuctionSchema = PublicAuctionCardSchema.extend({
   minBidValue: z.coerce.number().optional().default(0.01),
@@ -57,6 +80,8 @@ export const AuctionSchema = PublicAuctionCardSchema.extend({
   totalBids: z.coerce.number().optional().default(0),
   freeEntranceClaimed: z.coerce.number().optional().default(0),
   updatedAt: z.string().optional(),
+  winnerPaymentDueAt: z.string().optional().nullable(),
+  myResult: MyAuctionResultSchema.optional().nullable(),
 });
 
 export type Auction = z.infer<typeof AuctionSchema>;
@@ -100,6 +125,26 @@ export const BidSchema = z.object({
 
 export type Bid = z.infer<typeof BidSchema>;
 
+/** A "pay your winning bid" offer (staff view): the winner, then the next lowest unique bids. */
+export const WinnerOfferSchema = z.object({
+  id: z.string(),
+  auctionId: z.string(),
+  participantId: z.string(),
+  bidValue: z.coerce.number(),
+  attempt: z.coerce.number(),
+  status: z.string(),
+  dueAt: z.string(),
+  remindersSent: z.coerce.number().optional().default(0),
+  paidAt: z.string().optional().nullable(),
+  paymentTxRef: z.string().optional().nullable(),
+  createdAt: z.string().optional(),
+  participantName: z.string().optional().nullable(),
+  participantPhone: z.string().optional().nullable(),
+  participantEmail: z.string().optional().nullable(),
+});
+
+export type WinnerOffer = z.infer<typeof WinnerOfferSchema>;
+
 export const AuctionParticipationSchema = z.object({
   id: z.string(),
   auctionId: z.string(),
@@ -127,6 +172,7 @@ export const AuctionAuditSchema = z.object({
   status: z.string(),
   winnerBidValue: z.coerce.number().optional().nullable(),
   winnerName: z.string().optional().nullable(),
+  winnerPaymentStatus: z.string().optional().nullable(),
   totalBids: z.coerce.number(),
   uniqueBidsCount: z.coerce.number(),
   duplicatedBidsCount: z.coerce.number(),

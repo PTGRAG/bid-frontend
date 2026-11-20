@@ -190,6 +190,11 @@ export function PaymentsPanel({ actorRole }: { actorRole: string }) {
                       <p className="font-mono text-xs font-semibold text-slate-800">
                         {p.txRef}
                       </p>
+                      {p.purpose === "winner" ? (
+                        <span className="mt-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-900">
+                          Winning bid
+                        </span>
+                      ) : null}
                       {p.chapaReference ? (
                         <p className="mt-0.5 font-mono text-[10px] text-slate-400">
                           {p.chapaReference}
