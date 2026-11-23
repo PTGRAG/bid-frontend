@@ -9,7 +9,11 @@ import {
   RefreshCw,
   Loader2,
 } from "lucide-react";
-import { AuctionCard } from "@/components/auctions/AuctionCard";
+import {
+  AUCTION_GRID_CLASS,
+  AuctionCard,
+  AuctionCardSkeleton,
+} from "@/components/auctions/AuctionCard";
 import {
   listAuctions,
   type PublicAuctionCard,
@@ -163,23 +167,25 @@ export default function AuctionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 pt-24 sm:pt-28">
+    <div className="min-h-screen pb-12 pt-20 sm:pt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-8 max-w-2xl">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            {dict.auctions.title}
-          </h1>
-          <p className="mt-3 text-base text-slate-600">
-            {dict.auctions.subtitle}
-          </p>
+        <header className="mb-4 flex flex-col gap-1 sm:mb-5 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              {dict.auctions.title}
+            </h1>
+            <p className="mt-1 text-sm text-slate-600 sm:text-base">
+              {dict.auctions.subtitle}
+            </p>
+          </div>
         </header>
 
         {/* Filter Bar */}
         <section
           aria-label="Filter auctions"
-          className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+          className="sticky top-[4.25rem] z-30 -mx-1 mb-4 rounded-2xl border border-white/70 bg-white/85 p-2.5 shadow-[0_10px_30px_-16px_rgba(15,23,42,0.25)] ring-1 ring-slate-900/5 backdrop-blur-xl sm:top-[5.25rem] sm:mx-0 sm:mb-5 sm:p-3"
         >
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex gap-2">
             {/* Search input */}
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -188,7 +194,7 @@ export default function AuctionsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={dict.auctions.searchPlaceholder}
-                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-10 pr-9 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:border-[var(--brand-blue)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-10 pr-9 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:border-[var(--brand-blue)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20"
               />
               {search && (
                 <button
@@ -205,13 +211,13 @@ export default function AuctionsPage() {
               )}
             </div>
 
-            <div className="relative min-w-[200px] w-full sm:w-auto">
+            <div className="relative w-[7.5rem] shrink-0 sm:w-[200px]">
               <ArrowUpDown className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
                 aria-label="Sort auctions"
-                className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pl-10 pr-8 text-sm font-semibold text-slate-700 focus:border-[var(--brand-blue)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20 sm:min-w-[200px]"
+                className="h-10 w-full appearance-none truncate rounded-xl border border-slate-200 bg-slate-50/70 pl-9 pr-3 text-sm font-semibold text-slate-700 focus:border-[var(--brand-blue)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20 sm:pl-10"
               >
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -223,8 +229,8 @@ export default function AuctionsPage() {
           </div>
 
           {/* Status Pills + Results summary */}
-          <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div className="no-scrollbar -mx-1 flex min-w-0 items-center gap-1.5 overflow-x-auto px-1">
               {statusOptions.map((tab) => {
                 const active = statusFilter === tab.value;
                 const count = statusCounts[tab.value] ?? 0;
@@ -233,9 +239,9 @@ export default function AuctionsPage() {
                     key={tab.value}
                     type="button"
                     onClick={() => setStatusFilter(tab.value)}
-                    className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
+                    className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
                       active
-                        ? "bg-[var(--brand-blue)] text-white shadow-sm shadow-blue-500/20"
+                        ? "bg-[var(--brand-blue)] text-white shadow-[var(--shadow-glow)]"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900"
                     }`}
                   >
@@ -254,8 +260,8 @@ export default function AuctionsPage() {
               })}
             </div>
 
-            <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-500 sm:justify-end">
-              <span className="inline-flex items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-3 text-xs font-semibold text-slate-500">
+              <span className="hidden items-center gap-1.5 sm:inline-flex">
                 {isFetching && !isFetchingNextPage && (
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--brand-blue)]" />
                 )}
@@ -280,19 +286,9 @@ export default function AuctionsPage() {
 
         {/* Auctions Grid / States */}
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-2.5 sm:p-3.5 shadow-sm"
-              >
-                <div className="aspect-[4/3] w-full animate-pulse rounded-xl sm:rounded-2xl bg-slate-100" />
-                <div className="space-y-2 pt-3">
-                  <div className="h-4 w-2/3 animate-pulse rounded bg-slate-100" />
-                  <div className="hidden sm:block h-3 w-full animate-pulse rounded bg-slate-100" />
-                  <div className="h-4 w-1/3 animate-pulse rounded bg-slate-100 pt-1" />
-                </div>
-              </div>
+          <div className={AUCTION_GRID_CLASS}>
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <AuctionCardSkeleton key={idx} />
             ))}
           </div>
         ) : isError ? (
@@ -309,11 +305,11 @@ export default function AuctionsPage() {
             </button>
           </div>
         ) : items.length === 0 && !hasActiveFilters ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center text-slate-500">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-slate-500">
             {dict.auctions.noAuctionsYet}
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
             <p className="text-base font-bold text-slate-800">
               {dict.auctions.noMatches}
             </p>
@@ -331,20 +327,30 @@ export default function AuctionsPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((auction) => (
-                <AuctionCard key={auction.id} auction={auction} />
+            <div className={AUCTION_GRID_CLASS}>
+              {items.map((auction, i) => (
+                <div
+                  key={auction.id}
+                  className="cm-rise"
+                  style={{ ["--i" as string]: i % 12 }}
+                >
+                  <AuctionCard auction={auction} />
+                </div>
               ))}
             </div>
 
             {/* Infinite scroll sentinel & Load More fallback */}
             <div
               ref={sentinelRef}
-              className="mt-10 flex flex-col items-center justify-center gap-3"
+              className="mt-6 flex flex-col items-center justify-center gap-3"
             >
               {isFetchingNextPage ? (
                 <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-600 shadow-sm">
-                  <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-blue)]" />
+                  <span className="cm-dots text-[var(--brand-blue)]" aria-hidden>
+                    <span />
+                    <span />
+                    <span />
+                  </span>
                   {dict.common.loading}
                 </div>
               ) : hasNextPage ? (

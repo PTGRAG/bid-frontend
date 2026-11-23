@@ -241,6 +241,7 @@ export const en = {
     loginToJoin: "Log in to join",
     payAndJoin: "Pay entrance fee & join",
     setBidAndPayChapa: "Set bid & Pay via Chapa",
+    placeOneAndPayChapa: "Buy 1 ticket · {amount}",
     placePackAndPayChapa: "Buy {count} tickets · {amount}",
     freeLabel: "Free",
     freeEntranceBanner:
@@ -376,6 +377,9 @@ export const en = {
     mobileLowestUniqueTag: "Lowest unique wins",
   },
   dashboard: {
+    statJoined: "Joined",
+    statLive: "Live now",
+    statWon: "Won",
     title: "My auctions",
     subtitle: "Auctions you've joined and your bid activity.",
     loadError: "Could not load your auctions.",

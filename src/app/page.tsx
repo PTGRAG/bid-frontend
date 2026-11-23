@@ -13,10 +13,10 @@ export default async function HomePage() {
   let winners: Awaited<ReturnType<typeof listAuctions>>["items"] = [];
   try {
     const [activeRes, executedRes] = await Promise.all([
-      listAuctions({ page: 1, limit: 6, status: "active" }),
+      listAuctions({ page: 1, limit: 8, status: "active" }),
       listAuctions({ page: 1, limit: 6, status: "executed" }),
     ]);
-    auctions = activeRes.items.slice(0, 6);
+    auctions = activeRes.items.slice(0, 8);
     winners = executedRes.items
       .filter((a) => Boolean(a.winnerName))
       .slice(0, 6);

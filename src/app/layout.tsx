@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`antialiased ${baloo.variable} ${notoSansEthiopic.variable}`}>
       <body
-        className="font-sans flex min-h-screen flex-col bg-white antialiased selection:bg-brand-blue/10 selection:text-brand-blue"
+        className="font-sans cm-canvas flex min-h-screen flex-col antialiased selection:bg-brand-blue/10 selection:text-brand-blue"
       >
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
@@ -44,7 +44,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <Providers googleClientId={googleClientId}>
             <AppFrame>{children}</AppFrame>
-            <Toaster position="top-right" richColors />
+            <Toaster position="top-center" richColors closeButton toastOptions={{ style: { borderRadius: "14px" } }} />
           </Providers>
         </ErrorBoundary>
       </body>

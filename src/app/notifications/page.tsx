@@ -98,10 +98,10 @@ export default function NotificationsPage() {
     const totalPages = Math.ceil(total / LIMIT);
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 pt-24">
+        <div className="min-h-screen text-slate-900 pb-12 pt-20 sm:pt-24">
             <div className="container mx-auto max-w-4xl px-4">
                 {/* Header */}
-                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <Link
                             href="/"
@@ -110,7 +110,7 @@ export default function NotificationsPage() {
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Home
                         </Link>
-                        <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
+                        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Notifications</h1>
                         <p className="mt-1 text-slate-500">
                             Manage your alerts and winner confirmations.
                         </p>
@@ -131,15 +131,15 @@ export default function NotificationsPage() {
                 </div>
 
                 {/* List Container */}
-                <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div className="cm-card rounded-3xl overflow-hidden">
                     <div className="divide-y divide-slate-100">
                         {loading && !notifications.length ? (
-                            <div className="flex h-64 items-center justify-center">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+                            <div className="flex h-40 items-center justify-center">
+                                <span className="cm-spinner" />
                             </div>
                         ) : notifications.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="rounded-3xl bg-slate-50 p-8 mb-6 shadow-inner border border-slate-100">
+                            <div className="flex flex-col items-center justify-center py-10 text-center">
+                                <div className="rounded-2xl bg-slate-50 p-5 mb-4 border border-slate-100">
                                     <Bell className="h-12 w-12 text-slate-400" />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900">No notifications yet</h3>
@@ -151,12 +151,12 @@ export default function NotificationsPage() {
                             notifications.map((notification) => (
                                 <div
                                     key={notification.id}
-                                    className={`group relative flex gap-5 p-6 transition-all hover:bg-slate-50 ${!notification.isRead ? "bg-primary-50/30" : ""
+                                    className={`group relative flex gap-3 p-4 sm:gap-4 sm:p-5 transition-all hover:bg-slate-50 ${!notification.isRead ? "bg-primary-50/30" : ""
                                         }`}
                                 >
                                     {/* Icon */}
                                     <div className="flex-shrink-0">
-                                        <div className={`flex h-14 w-14 items-center justify-center rounded-[1.25rem] text-2xl shadow-sm ${getPriorityStyles(notification.priority)
+                                        <div className={`flex h-11 w-11 items-center justify-center rounded-[1.25rem] text-2xl shadow-sm ${getPriorityStyles(notification.priority)
                                             }`}>
                                             {getIconForType(notification.type)}
                                         </div>

@@ -23,24 +23,23 @@ export function WinnersSection({
   return (
     <section
       id="winners"
-      className="scroll-mt-24 py-12 sm:py-16 md:py-20 bg-slate-50/50"
+      className="scroll-mt-24 py-8 sm:py-12"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionTag>{dict.winners.tag}</SectionTag>
-
         {/* Section Header */}
-        <div className="mb-6 sm:mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mb-4 sm:mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+            <SectionTag align="left">{dict.winners.tag}</SectionTag>
+            <h2 className="mt-1.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               {dict.winners.title}
             </h2>
-            <p className="mt-2 sm:mt-3 text-sm sm:text-base leading-relaxed text-slate-600">
+            <p className="mt-1.5 text-sm sm:text-base leading-relaxed text-slate-600">
               {dict.winners.subtitle}
             </p>
           </div>
           <Link
             href="/auctions?status=executed"
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--brand-blue)] px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#1c8ee0] self-start sm:self-auto"
+            className="btn-shine group inline-flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:-translate-y-px hover:bg-[var(--brand-blue)] sm:self-auto sm:text-sm"
           >
             <span>{dict.winners.seePastResults}</span>
             <ArrowRight className="h-4 w-4" />
@@ -48,7 +47,7 @@ export function WinnersSection({
         </div>
 
         {/* 3 Transparency & Audit Pillars with Interactive Demonstration Cards */}
-        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
           <ConceptDemoCard
             title={dict.winners.trustPoints.logTitle}
             tag={locale === "am" ? "100% ይፋዊ" : "100% Transparent"}
@@ -84,18 +83,18 @@ export function WinnersSection({
 
         {/* Audit Cards Grid */}
         {winners.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center text-slate-500">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-6 py-6 text-center text-sm font-medium text-slate-500">
             {dict.winners.empty}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
             {winners.map((auction) => {
               const cover = auctionCoverImage(auction);
               return (
                 <Link
                   key={auction.id}
                   href={`/auctions/${auction.id}`}
-                  className="group flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-blue)]/40 hover:shadow-md"
+                  className="cm-card cm-card-interactive group flex flex-col overflow-hidden rounded-2xl p-2 sm:p-3"
                 >
                   {/* Product Cover with Verification Badges */}
                   <div className="relative aspect-[16/10] overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 flex items-center justify-center">

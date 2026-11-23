@@ -80,6 +80,50 @@ export function AuctionCountdown({
 
   const isDetail = variant === "detail";
 
+  if (isDetail) {
+    // One compact strip: label on the left, ticking digit tiles on the right.
+    return (
+      <div
+        className={`mt-4 flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 sm:px-4 ${
+          isUrgent
+            ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+            : "bg-slate-900 text-white"
+        }`}
+      >
+        <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider">
+          <span className="relative inline-flex">
+            <Clock className="h-4 w-4" />
+          </span>
+          {dict.auctions.countdown.endsIn}
+        </span>
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          {units.map((unit, i) => (
+            <div key={unit.label} className="flex items-center gap-1 sm:gap-1.5">
+              <div className="flex min-w-[2.6rem] flex-col items-center rounded-lg bg-white/12 px-1.5 py-1 ring-1 ring-inset ring-white/15 sm:min-w-[3rem]">
+                <span className="overflow-hidden text-lg font-extrabold leading-none tabular-nums sm:text-xl">
+                  <span
+                    key={unit.value}
+                    className={i === units.length - 1 ? "cm-tick inline-block" : "inline-block"}
+                  >
+                    {pad2(unit.value)}
+                  </span>
+                </span>
+                <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-white/70">
+                  {unit.label}
+                </span>
+              </div>
+              {i < units.length - 1 && (
+                <span className="text-sm font-extrabold text-white/40" aria-hidden>
+                  :
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={isDetail ? "mt-4 space-y-2.5" : "space-y-1.5"}>
       <span

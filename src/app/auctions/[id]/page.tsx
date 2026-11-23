@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ProductMediaGallery } from "@/components/media/ProductMediaGallery";
 import { auctionMediaItems } from "@/lib/auction-media";
-import { AuctionCard } from "@/components/auctions/AuctionCard";
+import { AUCTION_GRID_CLASS, AuctionCard } from "@/components/auctions/AuctionCard";
 import { AuctionCountdown } from "@/components/auctions/AuctionCountdown";
 import { BidPanel } from "@/components/auctions/BidPanel";
 import { CompletedAuctionAudit } from "@/components/auctions/CompletedAuctionAudit";
@@ -25,7 +25,7 @@ export default function AuctionDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { dict } = useLanguage();
+  const { dict, t, formatCurrency } = useLanguage();
   const { data: auction, isLoading, error } = useAuction(id);
   const { data: participation } = useMyParticipation(id);
   const { data: myBids = [] } = useMyBids(id);
@@ -57,15 +57,26 @@ export default function AuctionDetailPage({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center pt-28">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--brand-blue)] border-t-transparent" />
+      <div className="mx-auto max-w-7xl px-4 pb-12 pt-20 sm:px-6 sm:pt-24 lg:px-8" aria-busy="true">
+        <div className="skeleton mb-4 h-4 w-28" />
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-8">
+          <div className="skeleton aspect-[4/3] w-full rounded-3xl" />
+          <div className="space-y-3">
+            <div className="skeleton h-3 w-16" />
+            <div className="skeleton h-8 w-3/4" />
+            <div className="skeleton h-4 w-full" />
+            <div className="skeleton h-4 w-5/6" />
+            <div className="skeleton mt-4 h-14 w-full rounded-2xl" />
+            <div className="skeleton h-48 w-full rounded-2xl" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error || !auction) {
     return (
-      <div className="mx-auto max-w-lg px-4 pb-20 pt-28 text-center">
+      <div className="mx-auto max-w-lg px-4 pb-12 pt-24 text-center sm:pt-28">
         <p className="text-lg font-bold text-slate-900">
           {dict.auctionDetail.notFound}
         </p>
@@ -86,28 +97,47 @@ export default function AuctionDetailPage({
       : auction.status;
 
   return (
-    <div className="bg-slate-50 pb-20 pt-24 sm:pt-28">
+    <div className="pb-12 pt-20 sm:pt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Link
           href="/auctions"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-slate-900"
+          className="group mb-3 inline-flex items-center gap-1.5 rounded-full py-1 pr-2 text-sm font-bold text-slate-600 transition-colors hover:text-[var(--color-primary-700)] sm:mb-4"
         >
-          <ArrowLeft className="h-4 w-4" /> {dict.auctionDetail.allAuctions}
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />{" "}
+          {dict.auctionDetail.allAuctions}
         </Link>
 
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-          <ProductMediaGallery media={auctionMediaItems(auction)} />
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-8">
+          <div className="lg:sticky lg:top-24">
+            <ProductMediaGallery media={auctionMediaItems(auction)} />
+          </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--brand-blue)]">
-                {statusLabel}
-              </p>
-              <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${
+                    statusKey === "active"
+                      ? "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200"
+                      : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  {statusKey === "active" && <span className="cm-live-dot" aria-hidden />}
+                  {statusLabel}
+                </span>
+                {Number(auction.retailValue) > 0 && (
+                  <span className="inline-flex items-center rounded-full bg-[var(--brand-yellow)] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-900">
+                    {t("auctions.worth", {
+                      amount: formatCurrency(Number(auction.retailValue)),
+                    })}
+                  </span>
+                )}
+              </div>
+              <h1 className="mt-2 text-2xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
                 {auction.title}
               </h1>
               {auction.description ? (
-                <p className="mt-3 whitespace-pre-wrap text-base leading-relaxed text-slate-600">
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 sm:text-base">
                   {auction.description}
                 </p>
               ) : null}
@@ -131,18 +161,16 @@ export default function AuctionDetailPage({
         {/* Public Audit Log & Verification for completed auctions */}
         {(["executed", "closed"].includes(statusKey) ||
           (statusKey === "cancelled" && auction.winnerPaymentStatus === "unpaid")) && (
-          <div className="mt-12">
+          <div className="mt-8">
             <CompletedAuctionAudit auctionId={auction.id} />
           </div>
         )}
 
         {recommendedAuctions.length > 0 && (
-          <section className="mt-16 border-t border-slate-200/80 pt-12">
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <section className="mt-10">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[var(--brand-blue)]">
-                  {dict.auctionDetail.recommendedTag}
-                </p>
+                <p className="cm-eyebrow">{dict.auctionDetail.recommendedTag}</p>
                 <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
                   {dict.auctionDetail.recommendedTitle}
                 </h2>
@@ -152,15 +180,15 @@ export default function AuctionDetailPage({
               </div>
               <Link
                 href="/auctions"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[var(--brand-blue)] hover:underline"
+                className="group inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-sm font-bold text-[var(--color-primary-700)] shadow-xs ring-1 ring-slate-200 transition hover:ring-[var(--brand-blue)]/50"
               >
                 {dict.common.viewAll}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {recommendedAuctions.map((item) => (
+            <div className={AUCTION_GRID_CLASS}>
+              {recommendedAuctions.slice(0, 4).map((item) => (
                 <AuctionCard key={item.id} auction={item} />
               ))}
             </div>

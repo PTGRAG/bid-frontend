@@ -43,8 +43,8 @@ export const Navbar = () => {
   ];
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-2.5 sm:px-6 sm:pt-3.5">
-      <nav className="mx-auto flex h-14 max-w-6xl items-center gap-3 rounded-full border border-slate-200/80 bg-white/95 px-3 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-md transition-all duration-300 sm:h-16 sm:gap-4 sm:px-5">
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-2 sm:px-6 sm:pt-3">
+      <nav className="mx-auto flex h-14 max-w-7xl items-center gap-2 rounded-2xl border border-white/70 bg-white/85 px-2 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/5 backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 sm:h-16 sm:gap-4 sm:rounded-full sm:px-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
@@ -72,10 +72,10 @@ export const Navbar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className={`inline-flex h-10 items-center rounded-full px-3.5 text-sm font-bold transition-colors hover:bg-slate-50 hover:text-slate-950 ${
+              className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-bold transition-colors duration-200 ${
                 pathname === link.href || pathname.startsWith(`${link.href}/`)
-                  ? "text-slate-950 font-extrabold"
-                  : "text-slate-700"
+                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-700)] font-extrabold"
+                  : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-950"
               }`}
             >
               {link.label}
@@ -83,7 +83,7 @@ export const Navbar = () => {
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-2 sm:gap-2.5">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2.5">
           <LanguageSwitcher variant="pill" className="hidden h-10 sm:inline-flex" />
 
           {!loading && (
@@ -95,7 +95,7 @@ export const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-                      className="inline-flex h-10 max-w-[min(100vw-8rem,220px)] items-center gap-2 rounded-full border border-slate-200 px-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:px-3"
+                      className="inline-flex h-10 max-w-[min(100vw-8rem,220px)] items-center gap-2 rounded-full border border-slate-200 bg-white px-1 text-sm font-bold text-slate-700 transition-colors hover:border-[var(--brand-blue)]/40 sm:pl-1 sm:pr-3"
                     >
                       {user.picture ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -105,7 +105,7 @@ export const Navbar = () => {
                           alt=""
                         />
                       ) : (
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 font-bold text-slate-900">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--brand-blue)] to-[var(--color-primary-700)] font-extrabold text-white">
                           {user.fullName?.charAt(0)?.toUpperCase() ||
                             user.email?.charAt(0)?.toUpperCase()}
                         </span>
@@ -116,11 +116,11 @@ export const Navbar = () => {
                     </button>
 
                     {accountMenuOpen && (
-                      <div className="absolute right-0 z-50 mt-2 w-56 rounded-2xl border border-slate-200 bg-white py-1 shadow-lg">
+                      <div className="cm-rise absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-[0_18px_40px_-12px_rgba(15,23,42,0.25)]">
                         {isStaffRole(user.role) && (
                           <Link
                             href="/staffpanel"
-                            className="flex items-center gap-2 border-b border-slate-100 px-4 py-2.5 text-sm font-bold text-[var(--brand-blue)] hover:bg-blue-50/60"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--color-primary-700)] hover:bg-[var(--color-primary-50)]"
                             onClick={() => setAccountMenuOpen(false)}
                           >
                             <ShieldCheck className="h-4 w-4" /> {dict.nav.staffPanel}
@@ -128,7 +128,7 @@ export const Navbar = () => {
                         )}
                         <Link
                           href="/account"
-                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100"
+                          className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
                           onClick={() => setAccountMenuOpen(false)}
                         >
                           <Settings className="h-4 w-4" /> {dict.nav.accountSettings}
@@ -136,7 +136,7 @@ export const Navbar = () => {
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50"
                         >
                           <LogOut className="h-4 w-4" /> {dict.nav.signOut}
                         </button>
@@ -145,16 +145,16 @@ export const Navbar = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
                   <Link
                     href="/signup"
-                    className="inline-flex h-10 items-center justify-center rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-extrabold text-white shadow-sm transition-all hover:brightness-105 active:scale-[0.98] sm:px-5"
+                    className="btn-shine inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full bg-[var(--brand-blue)] px-3.5 text-sm font-extrabold text-white shadow-[var(--shadow-glow)] transition-all hover:-translate-y-px hover:bg-[var(--color-primary-600)] active:scale-[0.97] sm:h-10 sm:px-5"
                   >
                     {dict.nav.signup}
                   </Link>
                   <Link
                     href="/login"
-                    className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-extrabold text-slate-900 shadow-xs transition-all hover:bg-slate-50 active:scale-[0.98] sm:px-5"
+                    className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-3.5 text-sm font-extrabold text-slate-900 transition-all hover:-translate-y-px hover:border-slate-300 active:scale-[0.97] sm:h-10 sm:px-5"
                   >
                     {dict.nav.login}
                   </Link>
@@ -166,7 +166,7 @@ export const Navbar = () => {
       </nav>
 
       <div
-        className={`mx-auto mt-2 max-w-6xl overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-300 ease-in-out md:hidden ${
+        className={`mx-auto mt-2 max-w-7xl overflow-hidden rounded-2xl bg-white/95 backdrop-blur-xl shadow-xl transition-all duration-300 ease-in-out md:hidden ${
           mobileMenuOpen
             ? "max-h-[85vh] border border-slate-200 py-4 opacity-100"
             : "max-h-0 py-0 opacity-0"
@@ -182,7 +182,11 @@ export const Navbar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-lg px-4 py-3 text-base font-bold text-slate-700 transition-colors hover:bg-slate-50 active:bg-slate-100"
+              className={`rounded-xl px-4 py-3 text-base font-bold transition-colors active:bg-slate-100 ${
+                pathname === link.href
+                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-700)]"
+                  : "text-slate-700 hover:bg-slate-50"
+              }`}
               onClick={() => setMobileMenuOpen(false)}
             >
               {link.label}

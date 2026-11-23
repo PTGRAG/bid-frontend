@@ -76,7 +76,7 @@ export function WinnerResultPanel({
 
   const verifyingBanner = verifying ? (
     <div className="flex items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-900">
-      <div className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--brand-blue)] border-t-transparent" />
+      <div className="cm-spinner cm-spinner-sm" />
       {dict.auctionDetail.verifyingPayment}
     </div>
   ) : null;
@@ -84,7 +84,7 @@ export function WinnerResultPanel({
   if (outcome === "won_pay_now" && my?.bidValue != null) {
     const amount = formatCurrency(Number(my.bidValue));
     return (
-      <div className="space-y-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
+      <div className="cm-rise space-y-3 rounded-2xl border border-amber-300 bg-gradient-to-br from-[#FFF307]/45 via-amber-50 to-white p-4 shadow-[0_18px_40px_-20px_rgba(217,119,6,0.55)] sm:p-5">
         {verifyingBanner}
         <p className="text-lg font-extrabold text-slate-900">{dict.auctionDetail.youWonTitle}</p>
         {(my.attempt ?? 1) > 1 && (
@@ -118,7 +118,7 @@ export function WinnerResultPanel({
 
   if (outcome === "won_paid") {
     return (
-      <div className="space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-5">
+      <div className="space-y-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-4 sm:p-5">
         {verifyingBanner}
         <p className="text-lg font-extrabold text-emerald-900">{dict.auctionDetail.winnerPaidTitle}</p>
         {my?.bidValue != null && (

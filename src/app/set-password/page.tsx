@@ -154,7 +154,7 @@ export default function SetPasswordPage() {
       fallback={
         <AuthSplitShell>
           <div className="flex min-h-[40vh] items-center justify-center">
-            <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand-blue border-t-transparent" />
+            <div className="cm-spinner" />
           </div>
         </AuthSplitShell>
       }
