@@ -153,3 +153,16 @@ export function shouldRecordReferralVisit(code: string): boolean {
     return true;
   }
 }
+
+/**
+ * The Telegram mini app version of a referral link, or null when no bot is configured.
+ * Opening it starts the app with `ref_CODE`, which ReferralCapture reads like `?ref=`.
+ */
+export function telegramReferralLink(
+  code: string,
+  botUsername: string | undefined = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+): string | null {
+  const bot = (botUsername || "").trim().replace(/^@/, "");
+  if (!bot) return null;
+  return `https://t.me/${bot}?startapp=${TELEGRAM_REFERRAL_PREFIX}${encodeURIComponent(code)}`;
+}

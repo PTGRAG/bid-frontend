@@ -9,6 +9,7 @@ import {
   referralCodeFromStartParam,
   rememberReferral,
   shouldRecordReferralVisit,
+  telegramReferralLink,
 } from "./referral";
 import { extractAuctionIdFromStartParam } from "./telegram-webapp";
 
@@ -127,5 +128,13 @@ describe("shouldRecordReferralVisit", () => {
     expect(shouldRecordReferralVisit("KQ7M2P")).toBe(true);
     expect(shouldRecordReferralVisit("KQ7M2P")).toBe(false);
     expect(shouldRecordReferralVisit("OTHER1")).toBe(true);
+  });
+});
+
+describe("telegramReferralLink", () => {
+  it("builds a mini app link when a bot is configured", () => {
+    expect(telegramReferralLink("KQ7M2P", "@CarraBot")).toBe("https://t.me/CarraBot?startapp=ref_KQ7M2P");
+    expect(referralCodeFromStartParam("ref_KQ7M2P")).toBe("KQ7M2P");
+    expect(telegramReferralLink("KQ7M2P", "")).toBeNull();
   });
 });
