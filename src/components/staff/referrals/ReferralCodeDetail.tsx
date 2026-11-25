@@ -716,7 +716,7 @@ function RejectModal({
           The account stays, but it stops counting for this code. You can restore it later.
         </p>
         <Field label="Reason" hint="Saved in the audit log and shown to staff.">
-          <Input value={note} onChange={(ev) => setNote(ev.target.value)} maxLength={255} placeholder="e.g. Same person as …" />
+          <Input autoFocus value={note} onChange={(ev) => setNote(ev.target.value)} maxLength={255} placeholder="e.g. Same person as …" />
         </Field>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={onClose}>

@@ -101,6 +101,7 @@ export function CreateReferralCodeModal({
           }
         >
           <Input
+            autoFocus
             required={phoneRequired}
             value={ownerPhone}
             onChange={(e) => setOwnerPhone(e.target.value)}
