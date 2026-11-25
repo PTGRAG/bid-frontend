@@ -118,6 +118,8 @@ export const en = {
     filterDuplicates: "Duplicates Only",
     winnerBadge: "Winner",
     uniqueBadge: "Unique",
+    freeBidBadge: "Free bid",
+    freeBidNote: "Bids marked Free bid came closest to winning, so their owners got a free bid for their next ticket.",
     duplicateBadge: "Duplicated",
     bidCount: "{count} bids",
     searchFoundWinner: "🏆 Winner! {amount} was the lowest unique number placed by exactly 1 person.",
@@ -254,6 +256,8 @@ export const en = {
     freeEntranceUsed:
       "You already used your free entrance on another auction — entry fee applies here.",
     freeEntranceGone: "Free entrance spots on this auction are full.",
+    freeBidsApplied: "{count} free bid(s) applied: those tickets cost nothing.",
+    freeBidsBalance: "You have {count} free bid(s). They are used automatically on your next tickets.",
     redirectingToChapa: "Redirecting to Chapa…",
     verifyingPayment: "Verifying Chapa payment…",
     paymentVerifiedSuccess: "Payment verified & bids placed!",
