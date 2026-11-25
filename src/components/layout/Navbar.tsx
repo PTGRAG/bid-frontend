@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Settings, ShieldCheck, Menu, X } from "lucide-react";
+import { LogOut, Megaphone, Settings, ShieldCheck, Menu, X } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { isStaffRole } from "@/services/auth.service";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { useMyReferralDashboard } from "@/hooks/useMyReferralDashboard";
 
 export const Navbar = () => {
   const { user, loading, logout } = useAuth();
@@ -19,6 +20,9 @@ export const Navbar = () => {
   const pathname = usePathname();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Agents get a dashboard link. Shares its cache with /agent; non-agents get a cheap "no".
+  const { data: referrals } = useMyReferralDashboard(!loading);
+  const isAgent = !!user && !!referrals?.isReferrer;
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -37,6 +41,7 @@ export const Navbar = () => {
     ...(user
       ? [{ label: dict.nav.myAuctions, href: "/my-auctions" }]
       : []),
+    ...(isAgent ? [{ label: dict.nav.agentDashboard, href: "/agent" }] : []),
     { label: dict.nav.howItWorks, href: "/#how-it-works" },
     { label: dict.nav.winners, href: "/#winners" },
     { label: dict.nav.faq, href: "/#faq" },
@@ -124,6 +129,15 @@ export const Navbar = () => {
                             onClick={() => setAccountMenuOpen(false)}
                           >
                             <ShieldCheck className="h-4 w-4" /> {dict.nav.staffPanel}
+                          </Link>
+                        )}
+                        {isAgent && (
+                          <Link
+                            href="/agent"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--color-primary-700)] hover:bg-[var(--color-primary-50)]"
+                            onClick={() => setAccountMenuOpen(false)}
+                          >
+                            <Megaphone className="h-4 w-4" /> {dict.nav.agentDashboard}
                           </Link>
                         )}
                         <Link
