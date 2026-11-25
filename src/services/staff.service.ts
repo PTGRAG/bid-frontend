@@ -639,3 +639,61 @@ export async function uploadStaffMedia(file: File): Promise<{ url: string }> {
   }
   return { url: data.url };
 }
+
+/** Near-miss free-bid rules (staff). Defaults: 2nd–5th lowest unique, duplicate knockouts off. */
+export type NearMissSettings = {
+  enabled: boolean;
+  runnerUps: number;
+  includeDuplicates: boolean;
+  maxDuplicates: number;
+  updatedAt?: string;
+};
+
+export type NearMissSettingsResponse = {
+  settings: NearMissSettings;
+  defaults: NearMissSettings;
+  limits: { maxRunnerUps: number; maxDuplicates: number };
+};
+
+export type StaffFreeBidGrant = {
+  id: string;
+  participantId: string;
+  participantName?: string;
+  reason: "runner_up" | "duplicate_knockout" | "staff_grant";
+  rank?: number;
+  bidValue?: string | number;
+  createdAt: string;
+};
+
+export async function getNearMissSettings(): Promise<NearMissSettingsResponse> {
+  const res = await apiFetch<ApiResponse<unknown>>("/api/near-miss/settings");
+  return unwrapData(res) as NearMissSettingsResponse;
+}
+
+export async function updateNearMissSettings(
+  settings: Omit<NearMissSettings, "updatedAt">
+): Promise<NearMissSettings> {
+  const res = await apiFetch<ApiResponse<unknown>>("/api/near-miss/settings", {
+    method: "PUT",
+    body: JSON.stringify(settings),
+  });
+  return (unwrapData(res) as { settings: NearMissSettings }).settings;
+}
+
+/** Free bids given for one auction's near misses (admin only). */
+export async function listStaffAuctionFreeBids(auctionId: string): Promise<StaffFreeBidGrant[]> {
+  const res = await apiFetch<ApiResponse<unknown>>(
+    `/api/auctions/${encodeURIComponent(auctionId)}/free-bids`
+  );
+  const raw = (unwrapData(res) ?? {}) as { items?: StaffFreeBidGrant[] };
+  return Array.isArray(raw.items) ? raw.items : [];
+}
+
+/** Re-runs the near-miss credit for an auction whose winner paid. Safe to repeat. */
+export async function creditStaffAuctionFreeBids(auctionId: string): Promise<number> {
+  const res = await apiFetch<ApiResponse<unknown>>(
+    `/api/auctions/${encodeURIComponent(auctionId)}/free-bids/credit`,
+    { method: "POST" }
+  );
+  return Number((unwrapData(res) as { credited?: number })?.credited ?? 0);
+}
