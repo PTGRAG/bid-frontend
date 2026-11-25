@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Baloo_2, Noto_Sans_Ethiopic } from "next/font/google";
 import { AppFrame } from "@/components/layout/AppFrame";
 import { Providers } from "@/components/providers/Providers";
+import { MetaPixel } from "@/components/providers/MetaPixel";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { createSiteMetadata } from "@/lib/site-metadata";
 import { Toaster } from "sonner";
@@ -41,6 +42,7 @@ export default function RootLayout({
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
+        <MetaPixel />
         <ErrorBoundary>
           <Providers googleClientId={googleClientId}>
             <AppFrame>{children}</AppFrame>
