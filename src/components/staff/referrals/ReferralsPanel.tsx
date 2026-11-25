@@ -326,7 +326,7 @@ function CodesList({ onOpen, onCreate }: { onOpen: (id: string) => void; onCreat
 }
 
 function CodeRow({ c, onOpen }: { c: ReferralCodeListItem; onOpen: () => void }) {
-  const signupRate = c.visitors ? c.signups / c.visitors : 0;
+  const signupRate = c.visitors ? (c.signups / c.visitors) * 100 : 0;
   return (
     <tr
       className="cursor-pointer align-top transition hover:bg-slate-50/80"

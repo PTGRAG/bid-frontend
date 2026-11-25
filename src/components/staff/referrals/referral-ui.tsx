@@ -18,9 +18,10 @@ export function formatCount(n: number | null | undefined): string {
   return new Intl.NumberFormat("en-US").format(n || 0);
 }
 
-export function formatPct(rate: number | null | undefined): string {
-  if (!rate) return "0%";
-  return `${(rate * 100).toFixed(rate < 0.1 ? 1 : 0)}%`;
+/** Formats a percentage already on a 0–100 scale (the backend's funnel rates). */
+export function formatPct(pct: number | null | undefined): string {
+  if (!pct) return "0%";
+  return `${pct < 10 ? Number(pct.toFixed(1)) : Math.round(pct)}%`;
 }
 
 export function formatDate(iso?: string | null): string {
@@ -207,7 +208,7 @@ export function ActivityBars({ days }: { days: ReferralDailyCount[] }) {
     { key: "signups", label: "Signups", cls: "bg-[var(--brand-blue)]", total: totals.signups },
     { key: "qualified", label: "Qualified", cls: "bg-emerald-500", total: totals.qualified },
   ] as const;
-  const labelEvery = Math.max(1, Math.ceil(days.length / 8));
+  const labelEvery = Math.max(1, Math.ceil(days.length / 6));
   return (
     <div>
       <div className="mb-3 flex flex-wrap gap-4">
@@ -219,14 +220,14 @@ export function ActivityBars({ days }: { days: ReferralDailyCount[] }) {
           </div>
         ))}
       </div>
-      <div className="flex h-40 items-end gap-[3px]">
+      <div className="flex h-40 gap-[3px]">
         {days.map((d, i) => (
           <div
             key={d.day}
-            className="flex min-w-0 flex-1 flex-col items-center justify-end"
+            className="flex h-full min-w-0 flex-1 flex-col items-center"
             title={`${d.day}: ${d.visitors} visitors, ${d.signups} signups, ${d.qualified} qualified`}
           >
-            <div className="flex h-full w-full items-end justify-center gap-px">
+            <div className="flex min-h-0 w-full flex-1 items-end justify-center gap-px">
               {series.map((s) => (
                 <div
                   key={s.key}
@@ -235,7 +236,7 @@ export function ActivityBars({ days }: { days: ReferralDailyCount[] }) {
                 />
               ))}
             </div>
-            <span className="mt-1 h-3 text-[9px] font-semibold text-slate-400">
+            <span className="mt-1 h-3 whitespace-nowrap text-[9px] font-semibold text-slate-400">
               {i % labelEvery === 0 ? d.day.slice(5) : ""}
             </span>
           </div>

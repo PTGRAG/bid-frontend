@@ -75,7 +75,9 @@ export interface ReferralFunnel {
   pending: number;
   qualified: number;
   rejected: number;
+  /** Percent (0–100, one decimal). */
   visitorToSignupRate: number;
+  /** Percent (0–100, one decimal). */
   signupToQualifiedRate: number;
 }
 
