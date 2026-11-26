@@ -118,6 +118,11 @@ export function Footer() {
                   {dict.footer.faq}
                 </Link>
               </li>
+              <li>
+                <Link href="/agent" className={linkClass}>
+                  {dict.footer.becomeAgent}
+                </Link>
+              </li>
             </ul>
             <h4 className={headingClass}>{dict.footer.legalHeading}</h4>
             <ul className="space-y-2">

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { sendOtp, verifyOtp } from "@/services/auth.service";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Megaphone } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { validatePasswordPolicy } from "@/lib/passwordPolicy";
 import { ApiError, getErrorMessage, getCsrfToken } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,6 +14,8 @@ import { isInsideTelegram } from "@/lib/telegram-webapp";
 import { AuthSplitShell } from "@/components/auth/AuthSplitShell";
 import { PhonePrefixInput } from "@/components/auth/PhonePrefixInput";
 import { InvitedByBanner } from "@/components/referrals/InvitedByBanner";
+import { joinAsAgent } from "@/services/referrals.service";
+import { queryKeys } from "@/lib/query-keys";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -22,6 +25,7 @@ function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect") || "/";
+  const queryClient = useQueryClient();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [phone, setPhone] = useState("");
@@ -35,12 +39,19 @@ function SignupForm() {
   const [sendingCode, setSendingCode] = useState(false);
   const [flowError, setFlowError] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  // "Join as an agent too": on when they came from the agent page.
+  const [asAgent, setAsAgent] = useState(
+    () => searchParams?.get("agent") === "1" || redirect === "/agent"
+  );
+  // Set while the account is being created, so the signed-in redirect below waits for the
+  // agent step to finish.
+  const finishing = useRef(false);
   const alertRef = useRef<HTMLDivElement>(null);
 
   const normalizedPhone = phone.trim();
 
   useEffect(() => {
-    if (!authLoading && user) router.replace(redirect);
+    if (!authLoading && user && !finishing.current) router.replace(redirect);
   }, [user, authLoading, router, redirect]);
 
   useEffect(() => {
@@ -99,6 +110,7 @@ function SignupForm() {
     setSubmitting(true);
     try {
       const { verificationToken } = await verifyOtp(normalizedPhone, otpCode.trim());
+      finishing.current = true;
       try {
         await signup({
           phone: normalizedPhone,
@@ -108,8 +120,14 @@ function SignupForm() {
           verificationToken,
           acceptTerms: true,
         });
-        router.push(redirect);
+        if (asAgent) {
+          // The agent page explains any reason this can't happen (e.g. signup paused).
+          await joinAsAgent({ acceptTerms: true }).catch(() => undefined);
+          await queryClient.invalidateQueries({ queryKey: [...queryKeys.all, "me", "referrals"] });
+        }
+        router.push(asAgent ? "/agent" : redirect);
       } catch {
+        finishing.current = false;
         /* context */
       }
     } catch (err) {
@@ -198,6 +216,28 @@ function SignupForm() {
               {dict.auth.privacyPolicy}
             </Link>
             .
+          </span>
+        </label>
+
+        <label className="flex cursor-pointer gap-2.5 border-t border-slate-100 px-3 py-2.5 sm:px-4">
+          <input
+            type="checkbox"
+            checked={asAgent}
+            onChange={(e) => setAsAgent(e.target.checked)}
+            className="mt-0.5 size-4 shrink-0 rounded border-slate-300 bg-white text-brand-blue focus:ring-2 focus:ring-brand-blue/35 focus:ring-offset-0"
+            style={{ accentColor: "var(--brand-blue)" }}
+          />
+          <span className="min-w-0 text-xs leading-snug text-slate-600 sm:text-[0.8125rem]">
+            <span className="flex items-center gap-1.5 font-semibold text-slate-900">
+              <Megaphone className="h-3.5 w-3.5 text-brand-blue" />
+              {dict.auth.signupAsAgent}
+            </span>
+            <span className="mt-0.5 block">{dict.auth.signupAsAgentDesc}</span>
+            {asAgent && (
+              <span className="mt-1.5 block rounded-lg bg-slate-50 px-2 py-1.5 text-[0.7rem] text-slate-500">
+                {dict.auth.signupAgentRules}
+              </span>
+            )}
           </span>
         </label>
 

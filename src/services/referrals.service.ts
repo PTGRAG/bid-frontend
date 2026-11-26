@@ -58,6 +58,16 @@ export interface ReferralProgramAdmin extends ReferralProgram {
   warnings: string[];
 }
 
+export type PayoutMethod = "telebirr" | "cbe_birr" | "mpesa" | "bank";
+
+/** Where a code owner wants to be paid. Mobile money accounts are phone numbers (2519…). */
+export interface PayoutAccount {
+  method: PayoutMethod | string;
+  bank?: string;
+  account: string;
+  name: string;
+}
+
 export interface ReferralCodeView {
   id: string;
   code: string;
@@ -66,6 +76,10 @@ export interface ReferralCodeView {
   status: ReferralCodeStatus;
   link: string;
   createdAt: string;
+  /** The owner became an agent from the app (not created by staff). */
+  selfSignup?: boolean;
+  /** Null until the owner adds a payout account. */
+  payout?: PayoutAccount | null;
 }
 
 export interface ReferralFunnel {
@@ -149,6 +163,11 @@ export interface ReferralCodeListItem {
   createdAt: string;
   ownerName: string;
   ownerPhone: string;
+  selfSignup?: boolean;
+  payoutMethod?: string;
+  payoutBank?: string;
+  payoutAccount?: string;
+  payoutName?: string;
   visitors: number;
   visits: number;
   signups: number;
@@ -256,7 +275,65 @@ export function getMyReferralPayouts(): Promise<ReferralPayout[]> {
   return data(apiFetch("/api/referrals/me/payouts"));
 }
 
+// ---- Self-serve agents ----
+
+export type AgentJoinReason =
+  | "signup_closed"
+  | "not_participant"
+  | "account_inactive"
+  | "needs_phone"
+  | "phone_taken"
+  | "agent_paused";
+
+export interface AgentJoinInfo {
+  open: boolean;
+  isAgent: boolean;
+  canJoin: boolean;
+  reason?: AgentJoinReason | string;
+  hasPhone: boolean;
+  /** Masked. */
+  phone?: string;
+  fullName: string;
+  /** The default agent program a new agent joins. */
+  program: ReferralProgram;
+}
+
+/** Public: whether agent signup is open and the deal a new agent gets. */
+export function getPublicAgentProgram(): Promise<{ open: boolean; program: ReferralProgram }> {
+  return data(apiFetch("/api/public/agent-program", { skipAuthRedirect: true }));
+}
+
+export function getAgentJoinInfo(): Promise<AgentJoinInfo> {
+  return data(apiFetch("/api/referrals/agent"));
+}
+
+/** Become an agent. `phone` and `verificationToken` are only needed when the account has no phone. */
+export function joinAsAgent(input: {
+  acceptTerms: boolean;
+  phone?: string;
+  verificationToken?: string;
+}): Promise<AgentReferralDashboard> {
+  return data(apiFetch("/api/referrals/agent", { method: "POST", ...json(input) }));
+}
+
+export function setMyPayoutAccount(input: PayoutAccount, codeId?: string): Promise<PayoutAccount> {
+  return data(apiFetch(`/api/referrals/me/payout-account${qs({ codeId })}`, { method: "PUT", ...json(input) }));
+}
+
 // ---- Staff ----
+
+export interface ReferralSettings {
+  agentSignupOpen: boolean;
+  updatedAt?: string;
+}
+
+export function getReferralSettings(): Promise<ReferralSettings> {
+  return data(apiFetch("/api/referral-settings"));
+}
+
+export function updateReferralSettings(input: Partial<ReferralSettings>): Promise<ReferralSettings> {
+  return data(apiFetch("/api/referral-settings", { method: "PUT", ...json(input) }));
+}
 
 export interface ReferralProgramInput {
   name?: string;

@@ -131,7 +131,7 @@ export const Navbar = () => {
                             <ShieldCheck className="h-4 w-4" /> {dict.nav.staffPanel}
                           </Link>
                         )}
-                        {isAgent && (
+                        {isAgent ? (
                           <Link
                             href="/agent"
                             className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--color-primary-700)] hover:bg-[var(--color-primary-50)]"
@@ -139,6 +139,16 @@ export const Navbar = () => {
                           >
                             <Megaphone className="h-4 w-4" /> {dict.nav.agentDashboard}
                           </Link>
+                        ) : (
+                          !isStaffRole(user.role) && (
+                            <Link
+                              href="/agent"
+                              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                              onClick={() => setAccountMenuOpen(false)}
+                            >
+                              <Megaphone className="h-4 w-4" /> {dict.nav.becomeAgent}
+                            </Link>
+                          )
                         )}
                         <Link
                           href="/account"

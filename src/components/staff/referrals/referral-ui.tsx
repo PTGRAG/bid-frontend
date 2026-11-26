@@ -120,6 +120,15 @@ export function Badge({ className, children }: { className: string; children: Re
   );
 }
 
+/** Marks agents who signed themselves up from the app (no staff step). */
+export function SelfSignupBadge() {
+  return (
+    <Badge className="border-amber-200 bg-amber-50 text-amber-800">
+      <span title="Became an agent from the app">self signup</span>
+    </Badge>
+  );
+}
+
 export function KindBadge({ kind }: { kind: string }) {
   return (
     <Badge
