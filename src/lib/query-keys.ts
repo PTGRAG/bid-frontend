@@ -48,6 +48,7 @@ export const queryKeys = {
       [...queryKeys.me.referrals(viewerId), "activity", codeId ?? "all"] as const,
     referralPayouts: (viewerId?: string | null) =>
       [...queryKeys.me.referrals(viewerId), "payouts"] as const,
+    freeBids: () => [...queryKeys.all, "me", "free-bids"] as const,
   },
   notifications: {
     all: () => [...queryKeys.all, "notifications"] as const,

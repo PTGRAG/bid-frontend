@@ -121,6 +121,8 @@ export const am: Translations = {
     filterDuplicates: "የተደጋገሙ ብቻ",
     winnerBadge: "አሸናፊ",
     uniqueBadge: "ልዩ",
+    freeBidBadge: "ነፃ ጨረታ",
+    freeBidNote: "\"ነፃ ጨረታ\" የተባሉት ለማሸነፍ በጣም የቀረቡ ናቸው፤ ባለቤቶቻቸው ለሚቀጥለው ትኬት ነፃ ጨረታ አግኝተዋል።",
     duplicateBadge: "የተደጋገመ",
     bidCount: "{count} ተሞልቷል",
     searchFoundWinner: "🏆 አሸናፊ! {amount} በአንድ ሰው ብቻ የተመረጠ ዝቅተኛው ልዩ ቁጥር ነው።",
@@ -257,6 +259,8 @@ export const am: Translations = {
     freeEntranceUsed:
       "ነፃ መግቢያዎን በሌላ ጨረታ ተጠቅመዋል — እዚህ የመግቢያ ክፍያ ይከፈላል።",
     freeEntranceGone: "የዚህ ጨረታ ነፃ መግቢያ ቦታዎች ተሞልተዋል።",
+    freeBidsApplied: "{count} ነፃ ጨረታ(ዎች) ተተግብረዋል፤ እነዚያ ትኬቶች ክፍያ የላቸውም።",
+    freeBidsBalance: "{count} ነፃ ጨረታ(ዎች) አለዎት። በሚቀጥሉት ትኬቶችዎ ላይ በራስ-ሰር ይተገበራሉ።",
     redirectingToChapa: "ወደ ቻፓ በመሄድ ላይ…",
     verifyingPayment: "የቻፓ ክፍያ በማረጋገጥ ላይ…",
     paymentVerifiedSuccess: "ክፍያዎ ተረጋግጧል እና ጨረታዎ ተመዝግቧል!",

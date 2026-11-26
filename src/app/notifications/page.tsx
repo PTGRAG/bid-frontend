@@ -284,6 +284,8 @@ function getIconForType(type: string) {
         case 'bid_rejected':
         case 'auction_rejected':
             return '🛑';
+        case 'free_bid':
+            return '🎁';
         case 'payment_success':
             return '💳';
         case 'payment_failed':

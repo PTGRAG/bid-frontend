@@ -162,6 +162,10 @@ export const AuctionAuditEntrySchema = z.object({
   count: z.coerce.number(),
   isUnique: z.boolean(),
   isWinner: z.boolean(),
+  /** Masked name ("Ab*** K."), shown for the lowest unique bids once the winner has paid. */
+  bidder: z.string().optional(),
+  /** This near-miss bid earned its owner a free bid. */
+  freeBid: z.boolean().optional(),
 });
 
 export type AuctionAuditEntry = z.infer<typeof AuctionAuditEntrySchema>;

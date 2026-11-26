@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { queryKeys } from "@/lib/query-keys";
 import { toastApiError } from "@/lib/toast-api-error";
 import {
+  freeBidsApplicable,
+  getMyFreeBids,
   participateInAuction,
   updateBid,
   verifyChapaPayment,
@@ -82,11 +84,26 @@ export function BidPanel({
   const freeUnlimited = Boolean(auction.freeEntranceUnlimited);
   const freeRemaining = Number(auction.freeEntranceRemaining ?? 0);
   const freeLimit = Number(auction.freeEntranceLimit ?? 0);
-  // Free entrance makes the FIRST ticket (index 0) free; every other ticket pays the entrance
-  // fee. Mirrors domain.CheckoutCharge on the server.
-  const feeBidCount = freeEligible
-    ? Math.max(effectiveBids.length - 1, 0)
-    : effectiveBids.length;
+  // Near-miss free bids: each covers one more ticket's entrance fee. The server re-checks the
+  // balance at checkout (409 when it dropped).
+  const freeBidsQuery = useQuery({
+    queryKey: queryKeys.me.freeBids(),
+    queryFn: getMyFreeBids,
+    enabled: Boolean(user) && isOpen,
+    staleTime: 30_000,
+  });
+  const freeBidBalance =
+    entranceFeeNum > 0 ? (freeBidsQuery.data?.available ?? 0) : 0;
+  const freeBidsUsed = freeBidsApplicable(
+    freeBidBalance,
+    effectiveBids.length,
+    freeEligible
+  );
+  const anyFree = freeEligible || freeBidsUsed > 0;
+  // Free entrance makes the FIRST ticket (index 0) free and each free bid one more; every other
+  // ticket pays the entrance fee. Mirrors domain.CheckoutChargeWithFreeBids on the server.
+  const feeBidCount =
+    Math.max(effectiveBids.length - (freeEligible ? 1 : 0), 0) - freeBidsUsed;
   const packEntranceSum = roundMoney(feeBidCount * entranceFeeNum);
   const packTotal = packEntranceSum;
   const existingValues = new Set(
@@ -313,6 +330,7 @@ export function BidPanel({
         // We quoted a waived entrance fee: if the slot is gone the server answers 409
         // instead of silently charging the fee.
         expectEntranceFree: freeEligible,
+        expectFreeBids: freeBidsUsed,
       });
     },
     onSuccess: (result, bidValues) => {
@@ -347,11 +365,15 @@ export function BidPanel({
       );
       setPackTags([]);
       invalidate();
+      void qc.invalidateQueries({ queryKey: queryKeys.me.freeBids() });
     },
     onError: (err) => {
       toastApiError(err, dict.auctionDetail.joinError);
-      // Free entrance may have just been taken / switched off: refresh the quote.
+      // Free entrance or free bids may have changed: refresh the quote.
       if (freeEligible) invalidate();
+      if (freeBidsUsed > 0) {
+        void qc.invalidateQueries({ queryKey: queryKeys.me.freeBids() });
+      }
     },
   });
 
@@ -597,6 +619,13 @@ export function BidPanel({
                       : dict.auctionDetail.freeEntranceGone}
                   </div>
                 ) : null}
+                {freeBidBalance > 0 && (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-xs font-medium text-emerald-900">
+                    {t("auctionDetail.freeBidsBalance", {
+                      count: String(freeBidBalance),
+                    })}
+                  </div>
+                )}
                 <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs text-slate-600 space-y-1">
                   <div className="flex items-center justify-between">
                     <span>
@@ -605,7 +634,7 @@ export function BidPanel({
                         fee: formatCurrency(entranceFeeNum),
                       })}
                     </span>
-                    {freeEligible ? (
+                    {anyFree ? (
                       <span className="flex items-center gap-1.5 font-semibold">
                         <span className="text-slate-400 line-through">
                           {formatCurrency(roundMoney(effectiveBids.length * entranceFeeNum))}
@@ -629,6 +658,13 @@ export function BidPanel({
                   {freeEligible && packEntranceSum > 0 && (
                     <p className="text-[11px] font-medium text-emerald-700">
                       {dict.auctionDetail.freeFirstBidLine}
+                    </p>
+                  )}
+                  {freeBidsUsed > 0 && (
+                    <p className="text-[11px] font-medium text-emerald-700">
+                      {t("auctionDetail.freeBidsApplied", {
+                        count: String(freeBidsUsed),
+                      })}
                     </p>
                   )}
                   <div className="flex items-center justify-between border-t border-slate-200 pt-1 text-slate-900 font-bold">
@@ -663,7 +699,9 @@ export function BidPanel({
             >
               {participateMutation.isPending
                 ? dict.auctionDetail.redirectingToChapa
-                : freeEligible && effectiveBids.length <= 1
+                : anyFree && effectiveBids.length > 0 && packTotal === 0
+                  ? dict.auctionDetail.getFreeTicketBtn
+                  : freeEligible && effectiveBids.length <= 1
                   ? dict.auctionDetail.getFreeTicketBtn
                   : t(
                       effectiveBids.length <= 1

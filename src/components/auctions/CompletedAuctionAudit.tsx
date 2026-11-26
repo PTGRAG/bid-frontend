@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   AlertCircle,
   HelpCircle,
+  Gift,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getAuctionAudit, type AuctionAuditEntry } from "@/services/auctions.service";
@@ -296,6 +297,13 @@ export function CompletedAuctionAudit({ auctionId }: CompletedAuctionAuditProps)
         </div>
       </div>
 
+      {audit.entries?.some((e) => e.freeBid) && (
+        <p className="mt-3 flex items-start gap-1.5 text-[11px] font-medium text-emerald-800">
+          <Gift className="mt-0.5 h-3 w-3 shrink-0" />
+          {dict.audit.freeBidNote}
+        </p>
+      )}
+
       {/* Number Grid View */}
       <div className="mt-4 max-h-[380px] overflow-y-auto pr-1">
         {filteredEntries.length === 0 ? (
@@ -359,6 +367,17 @@ export function CompletedAuctionAudit({ auctionId }: CompletedAuctionAuditProps)
                   >
                     {formatCurrency(num)}
                   </p>
+                  {entry.bidder && (
+                    <p className="mt-0.5 truncate text-[10px] font-medium text-slate-500">
+                      {entry.bidder}
+                    </p>
+                  )}
+                  {entry.freeBid && (
+                    <span className="mt-1 inline-flex items-center justify-center gap-0.5 self-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-emerald-800">
+                      <Gift className="h-2.5 w-2.5" />
+                      {dict.audit.freeBidBadge}
+                    </span>
+                  )}
                 </div>
               );
             })}

@@ -30,6 +30,7 @@ import {
   BarChart3,
   Wallet,
   Share2,
+  Gift,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { isStaffRole } from "@/services/auth.service";
@@ -50,6 +51,7 @@ import { BroadcastPanel } from "@/components/staff/BroadcastPanel";
 import { AnalyticsPanel } from "@/components/staff/AnalyticsPanel";
 import { PaymentsPanel } from "@/components/staff/PaymentsPanel";
 import { ReferralsPanel } from "@/components/staff/referrals/ReferralsPanel";
+import { AuctionFreeBidsTab, FreeBidsPanel } from "@/components/staff/FreeBidsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -77,7 +79,8 @@ type StaffSection =
   | "users"
   | "customers"
   | "broadcast"
-  | "referrals";
+  | "referrals"
+  | "free-bids";
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-slate-100 text-slate-700 border-slate-200",
@@ -836,7 +839,7 @@ function AuctionActivityModal({
   onClose: () => void;
 }) {
   const drawn = auction.status === "executed" || auction.status === "cancelled";
-  const [tab, setTab] = useState<"bids" | "participants" | "winner">(
+  const [tab, setTab] = useState<"bids" | "participants" | "winner" | "free-bids">(
     drawn ? "winner" : "bids"
   );
 
@@ -917,10 +920,26 @@ function AuctionActivityModal({
               Winner payment
             </button>
           )}
+          {drawn && (
+            <button
+              type="button"
+              onClick={() => setTab("free-bids")}
+              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-xs font-bold uppercase tracking-wider ${
+                tab === "free-bids"
+                  ? "border-[var(--brand-blue)] text-[var(--brand-blue)]"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <Gift className="h-4 w-4" />
+              Free bids
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-          {tab === "winner" ? (
+          {tab === "free-bids" ? (
+            <AuctionFreeBidsTab auctionId={auction.id} />
+          ) : tab === "winner" ? (
             <WinnerOffersTable
               loading={offersQuery.isLoading}
               error={offersQuery.isError}
@@ -1157,6 +1176,7 @@ export default function StaffPanelPage() {
               { id: "customers", label: "Customers", icon: Contact },
               { id: "broadcast", label: "Broadcast", icon: Megaphone },
               { id: "referrals", label: "Referrals", icon: Share2 },
+              { id: "free-bids", label: "Free bids", icon: Gift },
             ] as const
           ).map(({ id, label, icon: Icon }) => (
             <button
@@ -1198,6 +1218,10 @@ export default function StaffPanelPage() {
 
         {section === "referrals" && (
           <ReferralsPanel actorRole={String(user.role || "")} />
+        )}
+
+        {section === "free-bids" && (
+          <FreeBidsPanel actorRole={String(user.role || "")} />
         )}
 
         {section === "auctions" && (

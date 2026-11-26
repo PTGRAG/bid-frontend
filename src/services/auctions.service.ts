@@ -147,6 +147,11 @@ export async function participateInAuction(
      * (slot taken / promo off) it answers 409 instead of silently charging more.
      */
     expectEntranceFree?: boolean;
+    /**
+     * How many near-miss free bids the UI applied to the quote. If fewer are available the
+     * server answers 409 instead of charging more.
+     */
+    expectFreeBids?: number;
   }
 ): Promise<ParticipateResult> {
   const body: Record<string, unknown> = {};
@@ -158,6 +163,9 @@ export async function participateInAuction(
   if (options?.returnUrl) body.returnUrl = options.returnUrl;
   if (options?.checkoutUrl) body.checkoutUrl = options.checkoutUrl;
   if (options?.expectEntranceFree) body.expectEntranceFree = true;
+  if (options?.expectFreeBids && options.expectFreeBids > 0) {
+    body.expectFreeBids = options.expectFreeBids;
+  }
 
   const res = await apiFetch<ApiResponse<ParticipateResult>>(
     `/api/public/auctions/${auctionId}/participate`,
@@ -167,6 +175,44 @@ export async function participateInAuction(
     }
   );
   return (res.data ?? res) as ParticipateResult;
+}
+
+export type FreeBidGrant = {
+  id: string;
+  auctionId?: string;
+  auctionTitle?: string;
+  reason: "runner_up" | "duplicate_knockout" | "staff_grant";
+  rank?: number;
+  bidValue?: string | number;
+  createdAt: string;
+};
+
+export type FreeBidBalance = {
+  available: number;
+  earned: number;
+  used: number;
+  recent: FreeBidGrant[];
+};
+
+/**
+ * Near-miss free bids of the signed-in customer. Each free bid covers one ticket's entrance fee
+ * at checkout; if that ticket wins, the bid amount is still paid as usual.
+ */
+export async function getMyFreeBids(): Promise<FreeBidBalance> {
+  const res = await apiFetch<ApiResponse<FreeBidBalance>>("/api/public/free-bids/me");
+  const data = (res.data ?? res) as FreeBidBalance;
+  return {
+    available: Number(data?.available ?? 0),
+    earned: Number(data?.earned ?? 0),
+    used: Number(data?.used ?? 0),
+    recent: Array.isArray(data?.recent) ? data.recent : [],
+  };
+}
+
+/** Number of free bids a checkout of ticketCount tickets uses. Mirrors domain.FreeBidsApplicable. */
+export function freeBidsApplicable(balance: number, ticketCount: number, waiveFirst: boolean): number {
+  const payable = Math.max(ticketCount - (waiveFirst ? 1 : 0), 0);
+  return Math.max(Math.min(balance, payable), 0);
 }
 
 /** Verify Chapa transaction after return from checkout. */
