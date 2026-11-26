@@ -37,6 +37,17 @@ export const queryKeys = {
   me: {
     auctions: (filters?: { page?: number; limit?: number }) =>
       [...queryKeys.all, "me", "auctions", filters ?? {}] as const,
+    /** The agent dashboard. Keyed by viewer because the cache outlives a sign-out. */
+    referrals: (viewerId?: string | null) =>
+      [...queryKeys.all, "me", "referrals", viewerId || "anon"] as const,
+    referralList: (
+      viewerId: string | null | undefined,
+      filters: { codeId?: string; status?: string; page?: number; limit?: number }
+    ) => [...queryKeys.me.referrals(viewerId), "list", filters] as const,
+    referralActivity: (viewerId: string | null | undefined, codeId?: string) =>
+      [...queryKeys.me.referrals(viewerId), "activity", codeId ?? "all"] as const,
+    referralPayouts: (viewerId?: string | null) =>
+      [...queryKeys.me.referrals(viewerId), "payouts"] as const,
   },
   notifications: {
     all: () => [...queryKeys.all, "notifications"] as const,

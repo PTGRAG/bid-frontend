@@ -190,9 +190,15 @@ export function ThresholdBar({
 }
 
 /** Daily visitors, signups and qualified bidders as grouped bars. */
-export function ActivityBars({ days }: { days: ReferralDailyCount[] }) {
+export function ActivityBars({
+  days,
+  labels = { visitors: "Visitors", signups: "Signups", qualified: "Qualified", empty: "No activity yet" },
+}: {
+  days: ReferralDailyCount[];
+  labels?: { visitors: string; signups: string; qualified: string; empty: string };
+}) {
   if (!days.length) {
-    return <p className="py-10 text-center text-sm text-slate-400">No activity yet</p>;
+    return <p className="py-10 text-center text-sm text-slate-400">{labels.empty}</p>;
   }
   const max = Math.max(1, ...days.map((d) => Math.max(d.visitors, d.signups, d.qualified)));
   const totals = days.reduce(
@@ -204,9 +210,9 @@ export function ActivityBars({ days }: { days: ReferralDailyCount[] }) {
     { visitors: 0, signups: 0, qualified: 0 }
   );
   const series = [
-    { key: "visitors", label: "Visitors", cls: "bg-slate-300", total: totals.visitors },
-    { key: "signups", label: "Signups", cls: "bg-[var(--brand-blue)]", total: totals.signups },
-    { key: "qualified", label: "Qualified", cls: "bg-emerald-500", total: totals.qualified },
+    { key: "visitors", label: labels.visitors, cls: "bg-slate-300", total: totals.visitors },
+    { key: "signups", label: labels.signups, cls: "bg-[var(--brand-blue)]", total: totals.signups },
+    { key: "qualified", label: labels.qualified, cls: "bg-emerald-500", total: totals.qualified },
   ] as const;
   const labelEvery = Math.max(1, Math.ceil(days.length / 6));
   return (
