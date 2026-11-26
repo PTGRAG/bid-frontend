@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { telegramReferralLink } from "@/lib/referral";
 import { toastApiError } from "@/lib/toast-api-error";
 import { tierRangeLabel } from "@/lib/referral-tiers";
+import { PAYOUT_METHOD_LABEL, formatPayoutAccount } from "@/lib/agent-payout";
 import {
   REFERRAL_REJECT_REASON_LABEL,
   addReferralPayout,
@@ -44,6 +45,7 @@ import {
   Field,
   KindBadge,
   Kpi,
+  SelfSignupBadge,
   Modal,
   REFERRAL_STATUS_BADGE,
   REFERRAL_STATUS_LABEL,
@@ -155,6 +157,7 @@ export function ReferralCodeDetail({
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-mono text-3xl font-extrabold tracking-tight text-slate-900">{d.code.code}</h1>
               <KindBadge kind={d.code.kind} />
+              {d.code.selfSignup ? <SelfSignupBadge /> : null}
               <Badge className={CODE_STATUS_BADGE[d.code.status] ?? CODE_STATUS_BADGE.paused}>{d.code.status}</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-600">
@@ -163,8 +166,9 @@ export function ReferralCodeDetail({
               {d.code.label ? <span className="text-slate-500"> · {d.code.label}</span> : null}
             </p>
             <p className="mt-0.5 text-xs text-slate-500">
-              {d.program.name} · created {formatDate(d.code.createdAt)}
+              {d.program.name} · {d.code.selfSignup ? "joined from the app" : "created"} {formatDate(d.code.createdAt)}
             </p>
+            <PayoutAccountLine detail={d} />
             <div className="mt-3 flex flex-col gap-1.5">
               <LinkRow label="Web" value={d.code.link} />
               {tgLink ? <LinkRow label="Telegram" value={tgLink} /> : null}
@@ -606,10 +610,35 @@ function EditCodeModal({ detail, onClose, onSaved }: { detail: Detail; onClose: 
   );
 }
 
+/** Where the owner asked to be paid (they set it on their agent dashboard). */
+function PayoutAccountLine({ detail }: { detail: Detail }) {
+  const p = detail.code.payout;
+  if (!p) {
+    return detail.code.kind === "agent" ? (
+      <p className="mt-2 inline-flex rounded-lg bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800">
+        No payout account yet. The agent adds it on their dashboard.
+      </p>
+    ) : null;
+  }
+  return (
+    <p className="mt-2 inline-flex flex-wrap items-center gap-x-1.5 rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+      <Banknote className="h-3.5 w-3.5 text-slate-400" />
+      Pays to <span className="font-semibold text-slate-800">{PAYOUT_METHOD_LABEL[p.method] ?? p.method}</span>
+      {p.bank ? <span>({p.bank})</span> : null}
+      <span className="font-mono font-semibold text-slate-900">{formatPayoutAccount(p)}</span>
+      <span>· {p.name}</span>
+    </p>
+  );
+}
+
 function PayoutModal({ detail, onClose, onSaved }: { detail: Detail; onClose: () => void; onSaved: () => void }) {
   const owed = detail.earnings.owed;
   const [amount, setAmount] = useState(String(owed));
-  const [method, setMethod] = useState<string>("telebirr");
+  const payTo = detail.code.payout;
+  const [method, setMethod] = useState<string>(
+    ({ bank: "bank_transfer", cbe_birr: "cbe_birr", mpesa: "other" } as Record<string, string>)[payTo?.method ?? ""] ??
+      "telebirr"
+  );
   const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
   const value = Number(amount);
@@ -636,6 +665,14 @@ function PayoutModal({ detail, onClose, onSaved }: { detail: Detail; onClose: ()
       <p className="mb-4 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
         Send the money first (telebirr, bank, cash), then record it here. {detail.ownerName || "The agent"} is owed{" "}
         <span className="font-extrabold text-slate-900">{formatEtb(owed, 2)}</span>.
+        {payTo ? (
+          <>
+            {" "}
+            Pay to {PAYOUT_METHOD_LABEL[payTo.method] ?? payTo.method}
+            {payTo.bank ? ` (${payTo.bank})` : ""}{" "}
+            <span className="font-mono font-semibold text-slate-900">{formatPayoutAccount(payTo)}</span>, {payTo.name}.
+          </>
+        ) : null}
       </p>
       <form
         className="space-y-4"

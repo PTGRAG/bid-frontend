@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChevronRight, Link2, Plus, RefreshCw, Scale, Search, Share2 } from "lucide-react";
+import { ChevronRight, Link2, Plus, RefreshCw, Scale, Search, Share2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toastApiError } from "@/lib/toast-api-error";
 import { tierRangeLabel } from "@/lib/referral-tiers";
+import { PAYOUT_METHOD_LABEL, formatPayoutAccount } from "@/lib/agent-payout";
 import {
+  getReferralSettings,
   listReferralCodes,
   listReferralPrograms,
   runReferralSweep,
+  updateReferralSettings,
   type ReferralCodeListItem,
 } from "@/services/referrals.service";
 import { CreateReferralCodeModal } from "./CreateReferralCodeModal";
@@ -22,6 +25,7 @@ import {
   CODE_STATUS_BADGE,
   CopyButton,
   KindBadge,
+  SelfSignupBadge,
   ThresholdBar,
   formatCount,
   formatEtb,
@@ -137,7 +141,10 @@ export function ReferralsPanel({ actorRole }: { actorRole: string }) {
       ) : selected ? (
         <ReferralCodeDetail codeId={selected} canEdit={canEdit} onBack={() => setSelected(null)} />
       ) : (
-        <CodesList onOpen={setSelected} onCreate={canEdit ? () => setCreating(true) : undefined} />
+        <>
+          <AgentSignupSwitch canEdit={canEdit} />
+          <CodesList onOpen={setSelected} onCreate={canEdit ? () => setCreating(true) : undefined} />
+        </>
       )}
 
       {creating ? (
@@ -149,6 +156,61 @@ export function ReferralsPanel({ actorRole }: { actorRole: string }) {
             setSelected(c.code.id);
           }}
         />
+      ) : null}
+    </div>
+  );
+}
+
+/** Staff switch for self-serve agent signup (customers becoming agents from /agent). */
+function AgentSignupSwitch({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const settings = useQuery({ queryKey: ["staff", "referrals", "settings"], queryFn: getReferralSettings });
+  const save = useMutation({
+    mutationFn: (open: boolean) => updateReferralSettings({ agentSignupOpen: open }),
+    onSuccess: (s) => {
+      qc.setQueryData(["staff", "referrals", "settings"], s);
+      toast.success(
+        s.agentSignupOpen
+          ? "Agent signup is open. Customers can become agents from the app."
+          : "Agent signup is closed. Existing agents keep working."
+      );
+    },
+    onError: (err) => toastApiError(err, "Could not change agent signup"),
+  });
+  const open = settings.data?.agentSignupOpen;
+
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-blue)]/[0.08] text-[var(--brand-blue)]">
+          <UserPlus className="h-4 w-4" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-slate-900">
+            Self-serve agent signup{" "}
+            {open === undefined ? null : open ? (
+              <Badge className="ml-1 border-emerald-200 bg-emerald-50 text-emerald-800">open</Badge>
+            ) : (
+              <Badge className="ml-1 border-slate-200 bg-slate-100 text-slate-600">closed</Badge>
+            )}
+          </p>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Customers become agents themselves from the Agent page and get a code on the default agent program.
+            One agent per account and phone, and one payout account per agent. Pause a code to disable an agent.
+          </p>
+        </div>
+      </div>
+      {canEdit && open !== undefined ? (
+        <Button
+          type="button"
+          size="sm"
+          variant={open ? "outline" : "default"}
+          className={`shrink-0 rounded-xl font-bold ${open ? "" : "bg-[var(--brand-blue)] text-white"}`}
+          disabled={save.isPending}
+          onClick={() => save.mutate(!open)}
+        >
+          {open ? "Close signup" : "Open signup"}
+        </Button>
       ) : null}
     </div>
   );
@@ -340,6 +402,7 @@ function CodeRow({ c, onOpen }: { c: ReferralCodeListItem; onOpen: () => void })
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm font-extrabold text-slate-900">{c.code}</span>
           <KindBadge kind={c.kind} />
+          {c.selfSignup ? <SelfSignupBadge /> : null}
           {c.status !== "active" ? (
             <Badge className={CODE_STATUS_BADGE[c.status] ?? CODE_STATUS_BADGE.paused}>{c.status}</Badge>
           ) : null}
@@ -352,6 +415,15 @@ function CodeRow({ c, onOpen }: { c: ReferralCodeListItem; onOpen: () => void })
       <td className="px-4 py-3">
         <p className="font-semibold text-slate-800">{c.ownerName || "—"}</p>
         <p className="text-xs text-slate-500">{c.ownerPhone || ""}</p>
+        {c.payoutAccount ? (
+          <p className="mt-0.5 text-[11px] text-slate-500">
+            Pays to {PAYOUT_METHOD_LABEL[c.payoutMethod ?? ""] ?? c.payoutMethod}
+            {c.payoutBank ? ` (${c.payoutBank})` : ""}{" "}
+            <span className="font-mono">{formatPayoutAccount({ method: c.payoutMethod ?? "", account: c.payoutAccount })}</span>
+          </p>
+        ) : c.kind === "agent" ? (
+          <p className="mt-0.5 text-[11px] font-semibold text-amber-700">No payout account yet</p>
+        ) : null}
       </td>
       <td className="px-4 py-3">
         <div className="flex items-baseline gap-3 text-xs text-slate-500">
