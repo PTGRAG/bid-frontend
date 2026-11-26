@@ -29,6 +29,7 @@ import {
   Megaphone,
   BarChart3,
   Wallet,
+  Share2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { isStaffRole } from "@/services/auth.service";
@@ -48,6 +49,7 @@ import { ParticipantsPanel } from "@/components/staff/ParticipantsPanel";
 import { BroadcastPanel } from "@/components/staff/BroadcastPanel";
 import { AnalyticsPanel } from "@/components/staff/AnalyticsPanel";
 import { PaymentsPanel } from "@/components/staff/PaymentsPanel";
+import { ReferralsPanel } from "@/components/staff/referrals/ReferralsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -74,7 +76,8 @@ type StaffSection =
   | "auctions"
   | "users"
   | "customers"
-  | "broadcast";
+  | "broadcast"
+  | "referrals";
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-slate-100 text-slate-700 border-slate-200",
@@ -1153,6 +1156,7 @@ export default function StaffPanelPage() {
               { id: "users", label: "Staff users", icon: UserCog },
               { id: "customers", label: "Customers", icon: Contact },
               { id: "broadcast", label: "Broadcast", icon: Megaphone },
+              { id: "referrals", label: "Referrals", icon: Share2 },
             ] as const
           ).map(({ id, label, icon: Icon }) => (
             <button
@@ -1190,6 +1194,10 @@ export default function StaffPanelPage() {
 
         {section === "broadcast" && (
           <BroadcastPanel actorRole={String(user.role || "")} />
+        )}
+
+        {section === "referrals" && (
+          <ReferralsPanel actorRole={String(user.role || "")} />
         )}
 
         {section === "auctions" && (

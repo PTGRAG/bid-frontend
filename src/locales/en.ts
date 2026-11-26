@@ -320,6 +320,8 @@ export const en = {
     signupTitle: "Sign up",
     loginSubtitle: "Sign in to join auctions and place bids.",
     signupSubtitle: "Create your account to start participating in auctions.",
+    invitedBy: "Invited by {name}",
+    invitedWithCode: "Joining with invite code {code}",
     welcomeBack: "Welcome back",
     welcomeBackSubtitle: "Use the same method you used when you joined.",
     passwordResetSuccess:

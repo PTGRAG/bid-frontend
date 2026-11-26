@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
+import { ReferralCapture } from "@/components/referrals/ReferralCapture";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { getCsrfToken } from "@/lib/api";
 
@@ -25,6 +26,7 @@ export function Providers({ children, googleClientId }: { children: React.ReactN
       <LanguageProvider>
         <AuthProvider googleClientId={clientId}>
           <Suspense fallback={null}>
+            <ReferralCapture />
             <AnalyticsProvider>{children}</AnalyticsProvider>
           </Suspense>
         </AuthProvider>

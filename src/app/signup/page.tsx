@@ -12,6 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { isInsideTelegram } from "@/lib/telegram-webapp";
 import { AuthSplitShell } from "@/components/auth/AuthSplitShell";
 import { PhonePrefixInput } from "@/components/auth/PhonePrefixInput";
+import { InvitedByBanner } from "@/components/referrals/InvitedByBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -155,6 +156,8 @@ function SignupForm() {
           {step === 1 ? dict.auth.signupSubtitle : dict.auth.enterCodeSubtitle}
         </p>
       </header>
+
+      <InvitedByBanner />
 
       {combinedError && (
         <div

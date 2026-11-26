@@ -322,6 +322,8 @@ export const am: Translations = {
     signupTitle: "ተመዝገብ",
     loginSubtitle: "ጨረታዎችን ለመቀላቀል እና ለመጫረት ይግቡ።",
     signupSubtitle: "በጨረታዎች ለመሳተፍ መለያዎን ይፍጠሩ።",
+    invitedBy: "በ{name} ተጋብዘዋል",
+    invitedWithCode: "በግብዣ ኮድ {code} እየተቀላቀሉ ነው",
     welcomeBack: "እንኳን ደህና መጡ",
     welcomeBackSubtitle: "መለያዎን ሲፈጥሩ በተጠቀሙበት ዘዴ ይግቡ።",
     passwordResetSuccess:
