@@ -7,7 +7,7 @@ import {
   BadgeCheck,
   CircleHelp,
   HandCoins,
-  Megaphone,
+  PauseCircle,
   Send,
   UserPlus,
   Wallet,
@@ -28,6 +28,8 @@ import {
 import { AgentShareCard } from "./AgentShareCard";
 import { AgentProgressCard } from "./AgentProgressCard";
 import { AgentReferralsList } from "./AgentReferralsList";
+import { AgentPayoutAccountCard } from "./AgentPayoutAccountCard";
+import { AgentGuestPitch, BecomeAgent } from "./BecomeAgent";
 import { formatAgentDate } from "./format";
 
 function Stat({
@@ -218,19 +220,21 @@ function LoadingState() {
   );
 }
 
-function NotAgentState() {
+function PausedBanner() {
   const { dict } = useLanguage();
   return (
-    <div className="cm-card mx-auto flex max-w-xl flex-col items-center px-6 py-10 text-center">
-      <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-yellow)] text-slate-900">
-        <Megaphone className="h-6 w-6" />
-      </span>
-      <p className="text-lg font-extrabold text-slate-900">{dict.agent.notAgentTitle}</p>
-      <p className="mt-1 text-sm text-slate-600">{dict.agent.notAgentDesc}</p>
+    <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <p className="flex items-center gap-2 text-sm font-extrabold text-amber-950">
+          <PauseCircle className="h-4 w-4 shrink-0" />
+          {dict.agent.pausedTitle}
+        </p>
+        <p className="mt-0.5 text-sm text-amber-900">{dict.agent.pausedDesc}</p>
+      </div>
       <button
         type="button"
         onClick={() => openTelegramUrl(SOCIAL.telegram)}
-        className="btn-shine mt-5 inline-flex h-10 items-center gap-1.5 rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-extrabold text-white shadow-[var(--shadow-glow)] transition hover:-translate-y-px"
+        className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 text-sm font-extrabold text-white transition hover:-translate-y-px"
       >
         <Send className="h-4 w-4" />
         {dict.agent.contactTeam}
@@ -243,7 +247,7 @@ function Dashboard({ data }: { data: AgentReferralDashboard }) {
   const { dict, t, formatCurrency } = useLanguage();
   const [codeId, setCodeId] = useState(data.codes[0]?.code.id);
   const summary = data.codes.find((c) => c.code.id === codeId) ?? data.codes[0];
-  if (!summary) return <NotAgentState />;
+  if (!summary) return <BecomeAgent />;
   const { funnel, earnings } = summary;
 
   return (
@@ -269,6 +273,8 @@ function Dashboard({ data }: { data: AgentReferralDashboard }) {
           ))}
         </div>
       )}
+
+      {summary.code.status === "paused" && <PausedBanner />}
 
       <AgentShareCard code={summary.code} />
 
@@ -318,6 +324,11 @@ function Dashboard({ data }: { data: AgentReferralDashboard }) {
           />
         </div>
         <div className="space-y-4">
+          <AgentPayoutAccountCard
+            key={summary.code.id}
+            summary={summary}
+            codeId={data.codes.length > 1 ? summary.code.id : undefined}
+          />
           <EarningsCard summary={summary} />
           <RulesCard summary={summary} />
         </div>
@@ -326,39 +337,70 @@ function Dashboard({ data }: { data: AgentReferralDashboard }) {
   );
 }
 
-export function AgentDashboard() {
+function PageHeader({ agent }: { agent: boolean }) {
+  const { dict } = useLanguage();
+  return (
+    <header className="mb-4 sm:mb-5">
+      <p className="cm-eyebrow">{dict.agent.eyebrow}</p>
+      <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+        {agent ? dict.agent.title : dict.agent.joinEyebrow}
+      </h1>
+      {agent && <p className="mt-1 text-sm text-slate-600">{dict.agent.subtitle}</p>}
+    </header>
+  );
+}
+
+function SignedInAgentPage() {
   const { dict } = useLanguage();
   const { data, isLoading, error, refetch, isRefetching } = useMyReferralDashboard();
+  const isAgent = !!data?.isReferrer && data.codes.length > 0;
 
+  return (
+    <>
+      <PageHeader agent={isLoading || isAgent} />
+      {isLoading ? (
+        <LoadingState />
+      ) : error ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-6 text-center text-sm font-semibold text-red-800">
+          {dict.agent.loadError}
+          <button
+            type="button"
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            className="ml-2 underline underline-offset-2 disabled:opacity-60"
+          >
+            {dict.common.retry}
+          </button>
+        </div>
+      ) : isAgent && data ? (
+        <Dashboard data={data} />
+      ) : (
+        <BecomeAgent />
+      )}
+    </>
+  );
+}
+
+/**
+ * /agent: the dashboard for agents, "Become an agent" for other customers, and the pitch with
+ * sign-up and sign-in buttons for visitors.
+ */
+export function AgentDashboard() {
+  const { user, loading } = useAuth();
   return (
     <div className="pb-12 pt-20 sm:pt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-4 sm:mb-5">
-          <p className="cm-eyebrow">{dict.agent.eyebrow}</p>
-          <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-            {dict.agent.title}
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">{dict.agent.subtitle}</p>
-        </header>
-
-        {isLoading ? (
-          <LoadingState />
-        ) : error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-6 text-center text-sm font-semibold text-red-800">
-            {dict.agent.loadError}
-            <button
-              type="button"
-              onClick={() => refetch()}
-              disabled={isRefetching}
-              className="ml-2 underline underline-offset-2 disabled:opacity-60"
-            >
-              {dict.common.retry}
-            </button>
+        {loading ? (
+          <div className="flex min-h-[50vh] items-center justify-center">
+            <div className="cm-spinner" />
           </div>
-        ) : !data?.isReferrer || data.codes.length === 0 ? (
-          <NotAgentState />
+        ) : user ? (
+          <SignedInAgentPage />
         ) : (
-          <Dashboard data={data} />
+          <>
+            <PageHeader agent={false} />
+            <AgentGuestPitch />
+          </>
         )}
       </div>
     </div>
