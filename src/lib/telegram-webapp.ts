@@ -311,7 +311,8 @@ export function getTelegramStartParam(): string | null {
 
 /**
  * Strips 'auction_' prefix from start_param to get raw auction UUID.
- * Supports both "auction_6ed3fc7e-..." and legacy "6ed3fc7e-..."
+ * Supports both "auction_6ed3fc7e-..." and legacy "6ed3fc7e-...".
+ * Returns null for referral start params ("ref_CODE").
  */
 export function extractAuctionIdFromStartParam(
   param: string | null | undefined
@@ -322,6 +323,8 @@ export function extractAuctionIdFromStartParam(
   if (trimmed.startsWith("auction_")) {
     return trimmed.slice("auction_".length).trim();
   }
+  // Referral links ("ref_CODE") open the app without pointing at an auction.
+  if (trimmed.toLowerCase().startsWith("ref_")) return null;
   return trimmed;
 }
 

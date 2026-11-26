@@ -29,6 +29,7 @@ import {
   Megaphone,
   BarChart3,
   Wallet,
+  Share2,
   Gift,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -49,6 +50,7 @@ import { ParticipantsPanel } from "@/components/staff/ParticipantsPanel";
 import { BroadcastPanel } from "@/components/staff/BroadcastPanel";
 import { AnalyticsPanel } from "@/components/staff/AnalyticsPanel";
 import { PaymentsPanel } from "@/components/staff/PaymentsPanel";
+import { ReferralsPanel } from "@/components/staff/referrals/ReferralsPanel";
 import { AuctionFreeBidsTab, FreeBidsPanel } from "@/components/staff/FreeBidsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,6 +79,7 @@ type StaffSection =
   | "users"
   | "customers"
   | "broadcast"
+  | "referrals"
   | "free-bids";
 
 const STATUS_BADGE: Record<string, string> = {
@@ -1172,6 +1175,7 @@ export default function StaffPanelPage() {
               { id: "users", label: "Staff users", icon: UserCog },
               { id: "customers", label: "Customers", icon: Contact },
               { id: "broadcast", label: "Broadcast", icon: Megaphone },
+              { id: "referrals", label: "Referrals", icon: Share2 },
               { id: "free-bids", label: "Free bids", icon: Gift },
             ] as const
           ).map(({ id, label, icon: Icon }) => (
@@ -1210,6 +1214,10 @@ export default function StaffPanelPage() {
 
         {section === "broadcast" && (
           <BroadcastPanel actorRole={String(user.role || "")} />
+        )}
+
+        {section === "referrals" && (
+          <ReferralsPanel actorRole={String(user.role || "")} />
         )}
 
         {section === "free-bids" && (
