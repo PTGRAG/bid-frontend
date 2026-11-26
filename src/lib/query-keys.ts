@@ -48,6 +48,9 @@ export const queryKeys = {
       [...queryKeys.me.referrals(viewerId), "activity", codeId ?? "all"] as const,
     referralPayouts: (viewerId?: string | null) =>
       [...queryKeys.me.referrals(viewerId), "payouts"] as const,
+    /** "Become an agent" eligibility and the default agent deal. */
+    agentJoin: (viewerId?: string | null) =>
+      [...queryKeys.me.referrals(viewerId), "join"] as const,
     freeBids: () => [...queryKeys.all, "me", "free-bids"] as const,
   },
   notifications: {
