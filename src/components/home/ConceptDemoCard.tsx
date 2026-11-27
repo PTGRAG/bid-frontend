@@ -5,7 +5,6 @@ import { Play, Pause } from "lucide-react";
 
 interface ConceptDemoCardProps {
   title: string;
-  tag: string;
   description: string;
   featurePill?: string;
   posterSrc: string;
@@ -15,7 +14,6 @@ interface ConceptDemoCardProps {
 
 export function ConceptDemoCard({
   title,
-  tag,
   description,
   featurePill,
   posterSrc,
@@ -66,16 +64,10 @@ export function ConceptDemoCard({
   };
 
   return (
-    <div className="cm-card cm-card-interactive group flex flex-col rounded-2xl p-3.5 sm:p-4">
-      {/* Card Header (Title & Tag, No Icon) */}
-      <div className="flex items-center justify-between gap-2">
-        <h4 className="truncate text-sm sm:text-base font-extrabold text-slate-900 transition-colors group-hover:text-[var(--brand-blue)]">
-          {title}
-        </h4>
-        <span className="shrink-0 rounded-md bg-[var(--brand-blue)]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--brand-blue)]">
-          {tag}
-        </span>
-      </div>
+    <div className="cm-card group flex flex-col rounded-2xl p-3.5 sm:p-4">
+      <h4 className="truncate text-sm sm:text-base font-extrabold text-slate-900">
+        {title}
+      </h4>
 
       {/* Description: responsive spacing */}
       <p className="mt-1.5 text-xs leading-relaxed text-slate-600 sm:min-h-[2.5rem]">

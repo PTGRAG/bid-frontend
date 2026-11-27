@@ -8,6 +8,7 @@ import {
     Loader2,
     ArrowLeft,
 } from "lucide-react";
+import { NotificationTypeIcon } from "@/components/notifications/NotificationTypeIcon";
 import Link from "next/link";
 import { SimplePagination } from "@/components/ui/pagination";
 import {
@@ -156,9 +157,9 @@ export default function NotificationsPage() {
                                 >
                                     {/* Icon */}
                                     <div className="flex-shrink-0">
-                                        <div className={`flex h-11 w-11 items-center justify-center rounded-[1.25rem] text-2xl shadow-sm ${getPriorityStyles(notification.priority)
+                                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${getPriorityStyles(notification.priority)
                                             }`}>
-                                            {getIconForType(notification.type)}
+                                            <NotificationTypeIcon type={notification.type} />
                                         </div>
                                     </div>
 
@@ -253,58 +254,6 @@ export default function NotificationsPage() {
             </div>
         </div>
     );
-}
-
-function getIconForType(type: string) {
-    switch (type) {
-        case 'participation_confirmed':
-            return '✅';
-        case 'bid_placed':
-        case 'bid_updated':
-        case 'bid_submitted':
-        case 'auction_submitted':
-            return '📝';
-        case 'auction_winner':
-        case 'winner_paid':
-        case 'bid_drawn':
-        case 'winner_confirmation_request':
-            return '🏆';
-        case 'auction_no_winner':
-        case 'auction_closed':
-        case 'auction_result':
-            return '🔒';
-        case 'auction_activated':
-            return '🟢';
-        case 'auction_postponed':
-        case 'winner_payment_reminder':
-            return '⏳';
-        case 'winner_payment_expired':
-            return '⌛';
-        case 'auction_cancelled':
-        case 'bid_rejected':
-        case 'auction_rejected':
-            return '🛑';
-        case 'free_bid':
-            return '🎁';
-        case 'payment_success':
-            return '💳';
-        case 'payment_failed':
-        case 'prize_not_delivered':
-            return '⚠️';
-        case 'refund_completed':
-        case 'payout_completed':
-        case 'winner_compensated':
-            return '💰';
-        case 'payout_ready':
-            return '💸';
-        case 'bid_approved':
-        case 'auction_approved':
-            return '🔨';
-        case 'legal_document_updated':
-            return '📜';
-        default:
-            return '✨';
-    }
 }
 
 function getPriorityStyles(priority: string) {

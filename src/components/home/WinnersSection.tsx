@@ -39,18 +39,16 @@ export function WinnersSection({
           </div>
           <Link
             href="/auctions?status=executed"
-            className="btn-shine group inline-flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:-translate-y-px hover:bg-[var(--brand-blue)] sm:self-auto sm:text-sm"
+            className="group inline-flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[var(--brand-blue)] sm:self-auto sm:text-sm"
           >
             <span>{dict.winners.seePastResults}</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
-        {/* 3 Transparency & Audit Pillars with Interactive Demonstration Cards */}
         <div className="mb-6 grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
           <ConceptDemoCard
             title={dict.winners.trustPoints.logTitle}
-            tag={locale === "am" ? "100% ይፋዊ" : "100% Transparent"}
             description={dict.winners.trustPoints.logDesc}
             featurePill={locale === "am" ? "ይፋዊ የጨረታ መዝገብ" : "Public Post-Round Ledger"}
             posterSrc="/bid_ledger_poster.avif"
@@ -60,7 +58,6 @@ export function WinnersSection({
 
           <ConceptDemoCard
             title={dict.winners.trustPoints.verifyTitle}
-            tag={locale === "am" ? "በማንም ሊረጋገጥ የሚችል" : "Auditable by Anyone"}
             description={dict.winners.trustPoints.verifyDesc}
             featurePill={locale === "am" ? "የውጤት ማረጋገጫ" : "Self-Audit Verification"}
             posterSrc="/bid_confirm_poster.avif"
@@ -70,7 +67,6 @@ export function WinnersSection({
 
           <ConceptDemoCard
             title={dict.winners.trustPoints.fairTitle}
-            tag={locale === "am" ? "የሂሳብ ቀመር" : "Deterministic Math"}
             description={dict.winners.trustPoints.fairDesc}
             featurePill={locale === "am" ? "አውቶማቲክ ስሌት" : "Autonomous Algorithm"}
             posterSrc="/provably_fair_poster.avif"
