@@ -34,9 +34,9 @@ import { PhonePrefixInput } from "@/components/auth/PhonePrefixInput";
 import { Input } from "@/components/ui/input";
 
 const primaryBtn =
-  "btn-shine inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand-blue)] px-5 text-sm font-extrabold text-white shadow-[var(--shadow-glow)] transition hover:-translate-y-px disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[var(--brand-blue)] px-5 text-sm font-extrabold text-white transition disabled:pointer-events-none disabled:opacity-50";
 const secondaryBtn =
-  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-900 transition hover:-translate-y-px hover:border-slate-300";
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-900 transition hover:border-slate-300";
 
 function topRate(program: ReferralProgram): number {
   return program.tiers.reduce((max, t) => Math.max(max, t.amount), 0);

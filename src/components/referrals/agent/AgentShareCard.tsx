@@ -104,7 +104,7 @@ export function AgentShareCard({ code }: { code: ReferralCodeView }) {
   };
 
   return (
-    <section className="cm-brand-panel relative overflow-hidden rounded-[1.25rem] p-4 text-white shadow-[var(--shadow-glow)] sm:p-5">
+    <section className="cm-brand-panel relative overflow-hidden rounded-[1.25rem] p-4 text-white sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-6">
         <div className="flex flex-col justify-between gap-3 lg:w-[38%]">
           <div>
@@ -151,7 +151,7 @@ export function AgentShareCard({ code }: { code: ReferralCodeView }) {
             <button
               type="button"
               onClick={() => openTelegramUrl(telegramShareUrl(shareLink, message))}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand-yellow)] px-3 text-sm font-extrabold text-slate-900 shadow-sm transition hover:-translate-y-px active:scale-[0.98]"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand-yellow)] px-3 text-sm font-extrabold text-slate-900 shadow-sm transition active:scale-[0.98]"
             >
               <Send className="h-4 w-4" />
               <span className="truncate sm:hidden">{dict.agent.shareTelegramShort}</span>
@@ -160,7 +160,7 @@ export function AgentShareCard({ code }: { code: ReferralCodeView }) {
             <button
               type="button"
               onClick={nativeShare}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-3 text-sm font-extrabold text-[var(--color-primary-800)] shadow-sm transition hover:-translate-y-px active:scale-[0.98]"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-3 text-sm font-extrabold text-[var(--color-primary-800)] shadow-sm transition active:scale-[0.98]"
             >
               <Share2 className="h-4 w-4" />
               {dict.agent.share}

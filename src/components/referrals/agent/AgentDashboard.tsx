@@ -234,7 +234,7 @@ function PausedBanner() {
       <button
         type="button"
         onClick={() => openTelegramUrl(SOCIAL.telegram)}
-        className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 text-sm font-extrabold text-white transition hover:-translate-y-px"
+        className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 text-sm font-extrabold text-white transition"
       >
         <Send className="h-4 w-4" />
         {dict.agent.contactTeam}

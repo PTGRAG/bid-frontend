@@ -1,5 +1,5 @@
 /**
- * Small eyebrow label shown above a section title (brand yellow diamond + blue caps).
+ * Small eyebrow label shown above a section title (blue caps).
  * Kept compact so sections start with content, not a big empty badge.
  */
 export function SectionTag({

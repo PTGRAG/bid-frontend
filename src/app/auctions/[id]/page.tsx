@@ -114,25 +114,17 @@ export default function AuctionDetailPage({
 
           <div className="space-y-4">
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${
-                    statusKey === "active"
-                      ? "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200"
-                      : "bg-slate-100 text-slate-600"
-                  }`}
-                >
-                  {statusKey === "active" && <span className="cm-live-dot" aria-hidden />}
-                  {statusLabel}
-                </span>
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--brand-blue)]">
+                {statusLabel}
                 {Number(auction.retailValue) > 0 && (
-                  <span className="inline-flex items-center rounded-full bg-[var(--brand-yellow)] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-900">
+                  <span className="text-slate-500">
+                    {" · "}
                     {t("auctions.worth", {
                       amount: formatCurrency(Number(auction.retailValue)),
                     })}
                   </span>
                 )}
-              </div>
+              </p>
               <h1 className="mt-2 text-2xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
                 {auction.title}
               </h1>

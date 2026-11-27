@@ -111,7 +111,7 @@ export function AgentProgressCard({ summary }: { summary: ReferralCodeSummary })
                 key={step.from}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition ${
                   current
-                    ? "bg-white ring-2 ring-[var(--brand-blue)] shadow-[var(--shadow-glow)]"
+                    ? "bg-white ring-2 ring-[var(--brand-blue)]"
                     : done
                       ? "bg-emerald-50/70"
                       : "bg-slate-50"

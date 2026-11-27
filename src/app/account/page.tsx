@@ -142,8 +142,7 @@ function AccountSettingsContent() {
           className="mb-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-950 shadow-sm"
           role="status"
         >
-          <p className="font-bold flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
+          <p className="font-bold">
             {dict.account.phoneRequiredBannerTitle}
           </p>
           <p className="mt-1.5 text-amber-900/90 leading-relaxed font-medium">

@@ -172,13 +172,13 @@ export const Navbar = () => {
                 <div className="flex items-center gap-1.5 sm:gap-2.5">
                   <Link
                     href="/signup"
-                    className="btn-shine inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full bg-[var(--brand-blue)] px-3.5 text-sm font-extrabold text-white shadow-[var(--shadow-glow)] transition-all hover:-translate-y-px hover:bg-[var(--color-primary-600)] active:scale-[0.97] sm:h-10 sm:px-5"
+                    className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full bg-[var(--brand-blue)] px-3.5 text-sm font-extrabold text-white transition-all hover:bg-[var(--color-primary-600)] active:scale-[0.97] sm:h-10 sm:px-5"
                   >
                     {dict.nav.signup}
                   </Link>
                   <Link
                     href="/login"
-                    className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-3.5 text-sm font-extrabold text-slate-900 transition-all hover:-translate-y-px hover:border-slate-300 active:scale-[0.97] sm:h-10 sm:px-5"
+                    className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-3.5 text-sm font-extrabold text-slate-900 transition-all hover:border-slate-300 active:scale-[0.97] sm:h-10 sm:px-5"
                   >
                     {dict.nav.login}
                   </Link>

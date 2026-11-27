@@ -36,14 +36,14 @@ export function CtaSection() {
           <div className="grid grid-cols-1 gap-2.5 sm:flex sm:shrink-0 sm:gap-3">
             <Link
               href="/signup"
-              className="btn-shine group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-sm font-extrabold text-[var(--color-primary-700)] shadow-[0_12px_28px_-8px_rgba(8,47,73,0.45)] transition hover:-translate-y-0.5 active:scale-[0.98]"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-sm font-extrabold text-[var(--color-primary-700)] shadow-[0_12px_28px_-8px_rgba(8,47,73,0.45)] transition active:scale-[0.98]"
             >
               {dict.home.createAccount}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
               href="/auctions"
-              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/70 bg-white/10 px-6 text-sm font-extrabold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/20 active:scale-[0.98]"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/70 bg-white/10 px-6 text-sm font-extrabold text-white backdrop-blur-sm transition hover:bg-white/20 active:scale-[0.98]"
             >
               {dict.home.browseAuctions}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

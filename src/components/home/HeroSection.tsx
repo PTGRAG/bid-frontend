@@ -165,7 +165,7 @@ export function HeroSection({
           >
             <Link
               href="/auctions"
-              className="btn-shine inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-4 text-sm font-extrabold text-[var(--color-primary-700)] shadow-[0_12px_28px_-8px_rgba(8,47,73,0.45)] transition duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] sm:h-14 sm:px-7 sm:text-base"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-4 text-sm font-extrabold text-[var(--color-primary-700)] shadow-[0_12px_28px_-8px_rgba(8,47,73,0.45)] transition duration-200 active:translate-y-0 active:scale-[0.98] sm:h-14 sm:px-7 sm:text-base"
             >
               <Trophy className="h-5 w-5 shrink-0" />
               <span>{dict.home.browseAuctions}</span>
@@ -173,7 +173,7 @@ export function HeroSection({
 
             <Link
               href="/#how-it-works"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/60 bg-white/10 px-4 text-sm font-extrabold text-white backdrop-blur-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white/20 active:translate-y-0 active:scale-[0.98] sm:h-14 sm:px-7 sm:text-base"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/60 bg-white/10 px-4 text-sm font-extrabold text-white backdrop-blur-sm transition duration-200 hover:bg-white/20 active:translate-y-0 active:scale-[0.98] sm:h-14 sm:px-7 sm:text-base"
             >
               <Users className="h-5 w-5 shrink-0" />
               <span>{dict.home.howItWorksBtn}</span>

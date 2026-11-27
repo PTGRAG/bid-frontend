@@ -126,7 +126,7 @@ function PayoutForm({
         <button
           type="submit"
           disabled={save.isPending || !account.trim() || !name.trim() || (isBank && !bank.trim())}
-          className="btn-shine inline-flex h-10 flex-1 items-center justify-center rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-extrabold text-white shadow-[var(--shadow-glow)] transition hover:-translate-y-px disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex h-10 flex-1 items-center justify-center rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-extrabold text-white transition disabled:pointer-events-none disabled:opacity-50"
         >
           {save.isPending ? dict.agent.payoutSaving : dict.agent.payoutSave}
         </button>
