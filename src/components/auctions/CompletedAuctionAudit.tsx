@@ -205,7 +205,7 @@ export function CompletedAuctionAudit({ auctionId }: CompletedAuctionAuditProps)
           htmlFor="bid-check-input"
           className="block text-xs sm:text-sm font-bold text-slate-800 mb-2"
         >
-          🔍 {dict.winners.trustPoints.verifyTitle}
+          {dict.winners.trustPoints.verifyTitle}
         </label>
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">

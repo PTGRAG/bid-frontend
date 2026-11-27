@@ -241,7 +241,7 @@ export default function AuctionsPage() {
                     onClick={() => setStatusFilter(tab.value)}
                     className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
                       active
-                        ? "bg-[var(--brand-blue)] text-white shadow-[var(--shadow-glow)]"
+                        ? "bg-[var(--brand-blue)] text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900"
                     }`}
                   >

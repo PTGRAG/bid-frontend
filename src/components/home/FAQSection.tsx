@@ -27,7 +27,7 @@ export function FAQSection() {
               <li key={item.q}>
                 <div
                   className={`cm-card overflow-hidden rounded-2xl transition-[border-color,box-shadow] duration-300 ${
-                    open ? "!border-[var(--brand-blue)]/40 shadow-[var(--shadow-card-hover)]" : ""
+                    open ? "!border-[var(--brand-blue)]/40" : ""
                   }`}
                 >
                   <button

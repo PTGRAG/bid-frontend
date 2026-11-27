@@ -5,14 +5,14 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold transition-[transform,background-color,box-shadow,color,border-color] duration-200 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background disabled:pointer-events-none disabled:opacity-55 disabled:shadow-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold transition-[transform,background-color,box-shadow,color,border-color] duration-200 ease-out active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background disabled:pointer-events-none disabled:opacity-55 disabled:shadow-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "btn-shine bg-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-[var(--color-primary-600)]",
+          "bg-primary text-primary-foreground hover:bg-[var(--color-primary-600)]",
         primary:
-          "btn-shine bg-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-[var(--color-primary-600)]",
+          "bg-primary text-primary-foreground hover:bg-[var(--color-primary-600)]",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
@@ -21,7 +21,7 @@ const buttonVariants = cva(
           "bg-slate-100 text-slate-900 hover:bg-slate-200/80",
         ghost: "hover:bg-slate-100 hover:text-slate-900 hover:translate-y-0",
         link: "text-primary underline-offset-4 hover:underline hover:translate-y-0",
-        premium: "btn-premium btn-shine text-white",
+        premium: "btn-premium text-white",
       },
       size: {
         default: "h-10 px-4",

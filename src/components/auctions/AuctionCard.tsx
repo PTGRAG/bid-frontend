@@ -200,7 +200,7 @@ export function AuctionCard({ auction }: { auction: PublicAuctionCard }) {
               className={[
                 "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-extrabold tabular-nums shadow-sm sm:px-2.5 sm:text-xs",
                 urgency === "critical"
-                  ? "bg-red-600 text-white animate-pulse"
+                  ? "bg-red-600 text-white"
                   : urgency === "soon"
                     ? "bg-amber-400 text-slate-900"
                     : "bg-[var(--brand-yellow)] text-black",
@@ -275,10 +275,10 @@ export function AuctionCard({ auction }: { auction: PublicAuctionCard }) {
           ) : (
             <span
               className={[
-                "btn-shine inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-extrabold transition-all duration-200 sm:h-10 sm:text-sm",
+                "inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-extrabold transition-all duration-200 sm:h-10 sm:text-sm",
                 hasJoined
                   ? "bg-[var(--color-primary-50)] text-[var(--color-primary-700)] ring-1 ring-inset ring-[var(--color-primary-200)] group-hover:bg-[var(--brand-blue)] group-hover:text-white group-hover:ring-transparent"
-                  : "bg-[var(--brand-blue)] text-white shadow-[var(--shadow-glow)] group-hover:bg-[var(--color-primary-600)]",
+                  : "bg-[var(--brand-blue)] text-white group-hover:bg-[var(--color-primary-600)]",
               ].join(" ")}
             >
               <Gavel className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />

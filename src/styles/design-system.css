@@ -91,7 +91,6 @@
     /* Soft, blue-tinted elevation used by cards and panels */
     --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px -6px rgba(15, 23, 42, 0.08);
     --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.04), 0 18px 36px -14px rgba(28, 142, 224, 0.32);
-    --shadow-glow: 0 8px 22px -8px rgba(45, 159, 246, 0.65);
     --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
     /* Transitions */
@@ -213,68 +212,42 @@ body {
 /* 2026 refresh: surfaces, motion, loading                              */
 /* ------------------------------------------------------------------ */
 
-/* App canvas: tinted base + soft brand glow + faint dot grid (numbers motif). */
+/* App canvas: flat tinted base. */
 .cm-canvas {
     background-color: var(--background);
-    background-image:
-        radial-gradient(60rem 26rem at 85% -8rem, rgba(45, 159, 246, 0.10), transparent 70%),
-        radial-gradient(40rem 20rem at -10% 10rem, rgba(255, 243, 7, 0.08), transparent 70%),
-        radial-gradient(rgba(15, 23, 42, 0.045) 1px, transparent 1px);
-    background-size: auto, auto, 22px 22px;
-    background-repeat: no-repeat, no-repeat, repeat;
 }
 
-/* Brand panel: the blue with depth instead of a flat fill. */
+/* Brand panel: flat brand blue. */
 .cm-brand-panel {
     background-color: var(--brand-blue);
-    background-image:
-        radial-gradient(36rem 18rem at 100% 0%, rgba(255, 255, 255, 0.22), transparent 65%),
-        radial-gradient(30rem 16rem at 0% 100%, rgba(22, 97, 153, 0.55), transparent 70%),
-        radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
-    background-size: auto, auto, 20px 20px;
 }
 
 /* White surface card with hairline ring and soft elevation. */
 .cm-card {
     background: var(--surface);
     border: 1px solid rgba(15, 23, 42, 0.06);
-    border-radius: 1.25rem;
-    box-shadow: var(--shadow-card);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .cm-card-interactive {
     transition:
-        transform 320ms var(--ease-out-expo),
-        box-shadow 320ms var(--ease-out-expo),
-        border-color 200ms ease;
+        border-color 150ms ease;
 }
 
 .cm-card-interactive:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: rgba(45, 159, 246, 0.35);
+    border-color: rgba(15, 23, 42, 0.2);
 }
 
 /* Small uppercase label used above section titles. */
 .cm-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.16em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-primary-700);
-}
-
-.cm-eyebrow::before {
-    content: "";
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 2px;
-    background: var(--brand-yellow);
-    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.85);
-    transform: rotate(45deg);
 }
 
 /* Shimmering skeleton block for loading states. */
@@ -296,27 +269,6 @@ body {
 
 @keyframes cm-shimmer {
     100% { transform: translateX(100%); }
-}
-
-/* Light sweep across primary buttons on hover. */
-.btn-shine {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-}
-
-.btn-shine::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    transform: translateX(-120%) skewX(-20deg);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-    transition: transform 650ms var(--ease-out-expo);
-}
-
-.btn-shine:hover::after {
-    transform: translateX(120%) skewX(-20deg);
 }
 
 /* Three bouncing dots: inline loading indicator for buttons and panels. */
@@ -363,34 +315,11 @@ body {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Live pulse dot. */
-.cm-live-dot {
-    position: relative;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 9999px;
-    background: #22c55e;
-}
-
-.cm-live-dot::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: inherit;
-    animation: cm-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes cm-ping {
-    75%, 100% { transform: scale(2.4); opacity: 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-    .cm-rise, .cm-tick, .skeleton::after, .cm-dots > span, .cm-live-dot::after, .btn-shine::after {
+    .cm-rise, .cm-tick, .skeleton::after, .cm-dots > span {
         animation: none !important;
         transition: none !important;
     }
-    .cm-card-interactive:hover { transform: none; }
 }
 
 /* Brand spinner: blue arc chasing a yellow arc. */

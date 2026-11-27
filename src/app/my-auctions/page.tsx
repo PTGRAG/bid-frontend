@@ -135,7 +135,7 @@ function MyAuctionsContent() {
             </p>
             <Link
               href="/auctions"
-              className="btn-shine mt-4 inline-flex h-10 items-center gap-1.5 rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-extrabold text-white shadow-[var(--shadow-glow)] transition hover:-translate-y-px"
+              className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-extrabold text-white transition"
             >
               {dict.dashboard.browseAuctions}
               <ArrowRight className="h-4 w-4" />
@@ -144,13 +144,11 @@ function MyAuctionsContent() {
         ) : (
           <ul className="grid gap-2.5 lg:grid-cols-2">
             {items.map(({ auction, participation, bids }, i) => {
-              const statusKey = String(auction.status).toLowerCase();
               const statusLabel =
                 dict.auctions.filters[
                   auction.status as keyof typeof dict.auctions.filters
                 ] ?? String(auction.status);
               const badge = resultBadge(auction, dict, t);
-              const isLive = ["active", "postponed"].includes(statusKey);
               return (
                 <li
                   key={participation.id || auction.id}
@@ -172,8 +170,7 @@ function MyAuctionsContent() {
                       ) : null}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                        {isLive && <span className="cm-live-dot" aria-hidden />}
+                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                         {statusLabel}
                       </p>
                       <p className="truncate font-extrabold text-slate-900 group-hover:text-[var(--color-primary-700)]">

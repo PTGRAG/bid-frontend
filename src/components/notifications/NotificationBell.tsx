@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Check, Loader2 } from 'lucide-react';
+import { NotificationTypeIcon } from "@/components/notifications/NotificationTypeIcon";
 import Link from 'next/link';
 import { getNotifications, markAsRead, markAllAsRead, getUnreadCount, type Notification } from '@/services/notifications.service';
 import { formatDistanceToNow } from 'date-fns';
@@ -214,58 +215,11 @@ export const NotificationBell: React.FC<{ className?: string }> = ({ className }
     );
 };
 
-function notificationIcon(type: string): string {
-    switch (type) {
-        case 'participation_confirmed':
-            return '✅';
-        case 'bid_placed':
-        case 'bid_updated':
-        case 'bid_submitted':
-        case 'auction_submitted':
-            return '📝';
-        case 'auction_winner':
-        case 'bid_drawn':
-        case 'winner_confirmation_request':
-            return '🏆';
-        case 'auction_no_winner':
-        case 'auction_closed':
-            return '🔒';
-        case 'auction_activated':
-            return '🟢';
-        case 'auction_postponed':
-            return '⏳';
-        case 'auction_cancelled':
-            return '🛑';
-        case 'payment_success':
-            return '💳';
-        case 'payment_failed':
-            return '⚠️';
-        case 'refund_completed':
-        case 'payout_completed':
-        case 'winner_compensated':
-            return '💰';
-        case 'payout_ready':
-            return '💸';
-        case 'legal_document_updated':
-            return '📜';
-        case 'prize_not_delivered':
-            return '🚨';
-        case 'bid_approved':
-        case 'auction_approved':
-            return '🔨';
-        case 'bid_rejected':
-        case 'auction_rejected':
-            return '🛑';
-        default:
-            return '✨';
-    }
-}
-
 const NotificationContent: React.FC<{ notification: Notification }> = ({ notification }) => {
     return (
         <div className="flex gap-3">
-            <div className="flex-shrink-0 text-xl">
-                {notificationIcon(notification.type)}
+            <div className="flex-shrink-0 pt-0.5 text-slate-500">
+                <NotificationTypeIcon type={notification.type} />
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-900">{notification.title}</p>
